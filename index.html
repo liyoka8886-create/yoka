@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoka - 随风起跑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #e2e8f0;
+            color: #1A1A2E;
+        }
+
+        /* 基础潮玩描边与阴影 */
+        .pop-border { border: 3px solid #1A1A2E; }
+        
+        .pop-shadow {
+            box-shadow: 4px 4px 0px 0px #1A1A2E;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pop-shadow:active {
+            box-shadow: 0px 0px 0px 0px #1A1A2E;
+            transform: translate(4px, 4px) scale(0.98);
+        }
+
+        .pop-shadow-sm {
+            box-shadow: 2.5px 2.5px 0px 0px #1A1A2E;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pop-shadow-sm:active {
+            box-shadow: 0px 0px 0px 0px #1A1A2E;
+            transform: translate(2px, 2px) scale(0.96);
+        }
+
+        /* 背景纹理 */
+        .bg-pop-grid {
+            background-image: radial-gradient(rgba(26, 26, 46, 0.1) 1.5px, transparent 1.5px);
+            background-size: 20px 20px;
+            background-color: #FAF9F6;
+        }
+        .bg-comic-burst {
+            background-image: repeating-conic-gradient(from 0deg, transparent 0deg 15deg, rgba(255, 255, 255, 0.2) 15deg 30deg);
+        }
+        .bg-pop-stripes {
+            background: repeating-linear-gradient(-45deg, #FFE600, #FFE600 12px, #FFD700 12px, #FFD700 24px);
+        }
+        .bg-dot-pattern {
+            background-image: radial-gradient(#1A1A2E 10%, transparent 11%), radial-gradient(#1A1A2E 10%, transparent 11%);
+            background-size: 10px 10px;
+            background-position: 0 0, 5px 5px;
+            opacity: 0.05;
+        }
+
+        /* 手账横线纸背景 */
+        .bg-ruled-paper {
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(26,26,46,0.1) 31px, rgba(26,26,46,0.1) 32px);
+            background-attachment: local;
+        }
+
+        /* 基础循环动画 */
+        .blob-shape {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: blob-anim 6s ease-in-out infinite alternate;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes blob-anim {
+            0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+        }
+
+        .animate-float { animation: float 3.5s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        .animate-float-shadow { animation: floatShadow 3.5s ease-in-out infinite; }
+        @keyframes floatShadow {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(0.8); opacity: 0.1; }
+        }
+
+        .animate-spin-slow { animation: spin 15s linear infinite; }
+        .animate-wiggle { animation: wiggle 2s ease-in-out infinite; }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        
+        .animate-pulse-soft { animation: pulseSoft 2s infinite; }
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        /* 跑步轨道 */
+        @keyframes track-dash { to { stroke-dashoffset: -100; } }
+        .animate-track { animation: track-dash 5s linear infinite; }
+
+        /* 云朵飘移 */
+        @keyframes cloud-pan {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-200%); }
+        }
+        .animate-cloud { animation: cloud-pan 12s linear infinite; }
+
+        /* 屏幕弹性入场动效 */
+        .screen { display: none; height: 100%; }
+        .screen.active {
+            display: flex; flex-direction: column;
+            animation: screenPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes screenPopIn {
+            0% { opacity: 0; transform: scale(0.92) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* 导航栏图标弹性点击动效 */
+        @keyframes navPop {
+            0% { transform: scale(1); }
+            40% { transform: scale(0.75); }
+            100% { transform: scale(1.15); }
+        }
+        .nav-pop-anim i, .nav-pop-anim svg {
+            animation: navPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* 屏幕震动动效 */
+        .shake-anim { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            20% { transform: translateX(-6px) rotate(-3deg); }
+            40% { transform: translateX(6px) rotate(3deg); }
+            60% { transform: translateX(-4px) rotate(-2deg); }
+            80% { transform: translateX(4px) rotate(2deg); }
+        }
+
+        /* 粒子飘浮消散动效 */
+        @keyframes particleFloat {
+            0% { opacity: 1; transform: translateY(0) scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: translateY(-40px) scale(1.2) rotate(10deg); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1) rotate(-10deg); }
+        }
+
+        /* 农场专属：爆金币收获动画 */
+        @keyframes harvestFloat {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            40% { opacity: 1; transform: translate(-50%, -150%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -250%) scale(1); }
+        }
+        .harvest-particle { animation: harvestFloat 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        /* 树洞卡片交错进场动效 */
+        .staggered-grid { column-count: 2; column-gap: 16px; }
+        .staggered-item { break-inside: avoid; margin-bottom: 16px; opacity: 0; }
+        .screen.active .staggered-item { animation: itemSlideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .screen.active .staggered-item:nth-child(1) { animation-delay: 0.1s; }
+        .screen.active .staggered-item:nth-child(2) { animation-delay: 0.2s; }
+        .screen.active .staggered-item:nth-child(3) { animation-delay: 0.3s; }
+        .screen.active .staggered-item:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes itemSlideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Toast 提示动画 */
+        @keyframes toastFadeInOut {
+            0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+            15% { opacity: 1; transform: translateY(0) scale(1); }
+            85% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+        }
+        .toast-anim { animation: toastFadeInOut 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-700 { animation-delay: 0.7s; }
+
+        /* 音乐环绕与跳舞动效 */
+        @keyframes orbit-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes counter-spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        .dance-anim { animation: dance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate !important; }
+        @keyframes dance {
+            0% { transform: translateY(0) rotate(-8deg) scale(1); }
+            100% { transform: translateY(-20px) rotate(8deg) scale(1.05); }
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* 进度条动画 */
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 65%; }
+        }
+        .screen.active .animate-progress { animation: fillProgress 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        /* 五子棋网格 */
+        .grid-cols-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+        .gomoku-cell {
+            position: relative;
+            cursor: pointer;
+        }
+        .gomoku-cell::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 2px;
+            background-color: rgba(26,26,46,0.3);
+            z-index: 0;
+        }
+        .gomoku-cell::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 0; bottom: 0;
+            width: 2px;
+            background-color: rgba(26,26,46,0.3);
+            z-index: 0;
+        }
+        .stone {
+            position: absolute;
+            top: 10%; left: 10%; right: 10%; bottom: 10%;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: stonePop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .stone-black { background-color: #1A1A2E; }
+        .stone-white { background-color: #FFFDF7; border: 2px solid #E2E8F0; }
+        
+        @keyframes stonePop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 农田生长动画 */
+        @keyframes growAnim {
+            0% { transform: scale(0.5) translateY(10px); opacity: 0.5; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .growing-crop { animation: growAnim 0.5s forwards; }
+
+        /* 烟花爆炸特效 */
+        @keyframes fireworkBurst {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1); opacity: 0; }
+        }
+        .firework-particle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border-radius: 50%;
+            animation: fireworkBurst 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            z-index: 40;
+        }
+
+        /* 数据条形图生长动画 */
+        @keyframes growBar {
+            from { transform: scaleY(0); transform-origin: bottom; }
+            to { transform: scaleY(1); transform-origin: bottom; }
+        }
+        .chart-bar {
+            animation: growBar 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            transform-origin: bottom;
+        }
+
+        /* 自定义潮玩复选框 */
+        .pop-checkbox-wrapper { cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .pop-checkbox {
+            appearance: none;
+            width: 18px; height: 18px;
+            background-color: #fff;
+            border: 2px solid #1A1A2E;
+            border-radius: 6px;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .pop-checkbox::before {
+            content: "";
+            width: 10px; height: 10px;
+            transform: scale(0);
+            transition: 0.15s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: inset 1em 1em var(--form-control-color, #1A1A2E);
+            background-color: #1A1A2E;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .pop-checkbox:checked { background-color: #FFE600; }
+        .pop-checkbox:checked::before { transform: scale(1); }
+    </style>
+</head>
+<body>
+
+<div class="flex justify-center items-center min-h-screen p-0 sm:p-4 overflow-hidden">
+    <!-- 手机外壳容器：强制设置圆角并优化高度防切边 -->
+    <div class="w-full max-w-[430px] h-[96vh] sm:h-[850px] bg-[#FFFDF7] rounded-[36px] sm:rounded-[42px] shadow-2xl overflow-hidden relative pop-border flex flex-col">
+        
+        <!-- 新增：启动加载屏 (Splash / Loading Screen) -->
+        <div id="screen-splash" class="absolute inset-0 z-[300] bg-[#FF6B00] flex flex-col items-center justify-center transition-transform duration-700 ease-in-out">
+            <!-- 装饰图案 -->
+            <div class="absolute inset-0 bg-comic-burst opacity-20 animate-spin-slow pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="w-24 h-24 bg-white rounded-full pop-border pop-shadow flex items-center justify-center animate-bounce mb-6">
+                    <i data-lucide="zap" class="w-12 h-12 text-[#1A1A2E] fill-[#FFE600]"></i>
+                </div>
+                <h1 class="text-5xl font-black italic tracking-wider text-white drop-shadow-[4px_4px_0_#1A1A2E]">YOKA</h1>
+                <p class="font-bold text-sm mt-3 bg-white px-3 py-1 rounded-full pop-border shadow-sm text-[#1A1A2E]">随风起跑，做自己的光</p>
+                
+                <div class="mt-16 w-56 h-4 bg-white/30 rounded-full pop-border overflow-hidden relative p-0.5">
+                    <div id="splash-progress" class="h-full bg-[#FFE600] rounded-full w-0 transition-all duration-1000 border-r-2 border-[#1A1A2E]"></div>
+                </div>
+                <p class="text-[10px] font-black text-white mt-2 tracking-widest animate-pulse">LOADING...</p>
+            </div>
+        </div>
+
+        <!-- 优化后：登录注册屏 (Login Screen) -->
+        <div id="screen-login" class="absolute inset-0 z-[290] bg-[#FAF9F6] bg-pop-grid flex flex-col items-center justify-center p-6 transition-transform duration-700 ease-in-out">
+            <!-- 漂浮装饰 -->
+            <i data-lucide="sparkles" class="absolute top-20 left-10 w-8 h-8 text-[#FF6B00] opacity-50 animate-pulse-soft"></i>
+            <i data-lucide="star" class="absolute top-40 right-12 w-6 h-6 text-[#34D399] fill-[#34D399] opacity-60 animate-bounce delay-300"></i>
+
+            <div class="w-full flex flex-col gap-5 relative z-10">
+                <div class="text-center mb-1 animate-float">
+                    <div class="inline-block bg-[#FFE600] px-4 py-2 rounded-2xl pop-border pop-shadow-sm rotate-[-3deg] mb-3 relative">
+                        <div class="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full pop-border flex items-center justify-center rotate-12">
+                            <img src="https://api.dicebear.com/7.x/micah/svg?seed=yoka" class="w-6 h-6" alt="mascot">
+                        </div>
+                        <h2 class="text-3xl font-black italic text-[#1A1A2E] tracking-tighter">WELCOME!</h2>
+                    </div>
+                    <p class="text-sm font-bold text-slate-500">在这里，卸下疲惫，遇见同频的灵魂 ✨</p>
+                </div>
+                
+                <div class="bg-white p-6 pb-8 rounded-[32px] pop-border pop-shadow flex flex-col gap-4 relative">
+                    <!-- 装饰 -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-4 bg-[#FF6B00] pop-border rotate-2 z-10"></div>
+                    
+                    <!-- 登录方式切换 Tab -->
+                    <div class="flex gap-2 p-1 bg-slate-100 rounded-[20px] pop-border mb-2 relative">
+                        <div id="login-tab-indicator" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-[16px] pop-border pop-shadow-sm transition-all duration-300"></div>
+                        <button onclick="switchLoginTab('pwd')" id="tab-btn-pwd" class="flex-1 relative z-10 py-2.5 text-sm font-black text-[#1A1A2E] transition-colors">密码登录</button>
+                        <button onclick="switchLoginTab('code')" id="tab-btn-code" class="flex-1 relative z-10 py-2.5 text-sm font-bold text-slate-400 transition-colors">验证码登录</button>
+                    </div>
+
+                    <!-- 动态表单区域 -->
+                    <div id="login-form-area" class="flex flex-col gap-4 transition-opacity duration-300">
+                        <!-- 默认密码登录 -->
+                        <div class="relative group">
+                            <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> 账号</label>
+                            <input type="text" placeholder="Yoka ID / 手机号" class="w-full bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300" value="13888888888">
+                        </div>
+                        <div class="relative group">
+                            <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center justify-between">
+                                <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> 密码</span>
+                                <span class="text-[#FF6B00] cursor-pointer hover:underline transition-colors">忘记密码?</span>
+                            </label>
+                            <input type="password" placeholder="输入密码" class="w-full bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300" value="123456">
+                        </div>
+                    </div>
+                    
+                    <!-- 协议勾选 -->
+                    <label class="pop-checkbox-wrapper mt-2" id="agreement-wrapper">
+                        <input type="checkbox" id="login-agreement" class="pop-checkbox">
+                        <span class="text-[10px] font-bold text-slate-500 select-none transition-colors">
+                            已阅读并同意 <a href="#" class="text-[#1A1A2E] underline">《用户协议》</a> 与 <a href="#" class="text-[#1A1A2E] underline">《隐私政策》</a>
+                        </span>
+                    </label>
+
+                    <button onclick="handleLogin()" id="login-btn" class="w-full bg-[#1A1A2E] text-white mt-1 py-3.5 rounded-[20px] pop-border pop-shadow font-black flex justify-center items-center gap-2 hover:-translate-y-1 active:scale-95 transition-all text-lg tracking-wider group">
+                        <span id="login-btn-text">进入治愈星球</span> <i data-lucide="arrow-right" id="login-btn-icon" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+                
+                <div class="flex flex-col items-center gap-3 mt-2">
+                    <p class="text-[10px] font-bold text-slate-400 flex items-center gap-2">
+                        <span class="w-8 h-px bg-slate-300"></span> 其他方式登录 <span class="w-8 h-px bg-slate-300"></span>
+                    </p>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="showToast('正在调起微信授权...','info')" class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:-translate-y-1 active:scale-95 transition-transform"><i data-lucide="message-circle" class="w-5 h-5 text-[#34D399] fill-[#34D399]"></i></button>
+                        <button onclick="showToast('正在调起 Apple 登录...','info')" class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:-translate-y-1 active:scale-95 transition-transform"><i data-lucide="apple" class="w-5 h-5 text-[#1A1A2E] fill-[#1A1A2E]"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区域：去除底层的深色背景防溢出 -->
+        <div class="flex-1 overflow-hidden relative bg-[#FFFDF7]">
+            
+            <!-- 1. 家园屏 (Home) -->
+            <div id="screen-home" class="screen active bg-[#FFE600] relative overflow-hidden">
+                <!-- 装饰：背景圆点与旋转太阳插画 -->
+                <div class="absolute inset-0 bg-dot-pattern pointer-events-none"></div>
+                <svg class="absolute -top-10 -left-10 w-48 h-48 animate-spin-slow opacity-20 pointer-events-none" viewBox="0 0 100 100">
+                    <path d="M50 0 L55 35 L90 10 L65 45 L100 50 L65 55 L90 90 L55 65 L50 100 L45 65 L10 90 L35 55 L0 50 L35 45 L10 10 L45 35 Z" fill="#FF6B00"/>
+                </svg>
+
+                <div class="mt-8 px-6 flex justify-between items-center z-20">
+                    <div class="flex gap-2">
+                        <div onclick="showToast('等级特权系统正在建设中，敬请期待！', 'award')" class="flex items-center gap-1.5 bg-white rounded-xl px-3 py-1.5 pop-border pop-shadow-sm cursor-pointer active:scale-95 transition-transform">
+                            <i data-lucide="award" class="text-[#FF6B00] w-4 h-4"></i>
+                            <span class="font-black text-xs">LV.5</span>
+                        </div>
+                        <div onclick="showToast('多运动和种田可以获取更多能量哦⚡', 'info')" class="flex items-center gap-1.5 bg-white rounded-xl px-3 py-1.5 pop-border pop-shadow-sm cursor-pointer active:scale-95 transition-transform">
+                            <i data-lucide="zap" class="text-[#1A1A2E] w-4 h-4 text-[#FFE600] fill-[#FFE600]"></i>
+                            <span class="font-black text-xs" id="energy-val">890</span>
+                        </div>
+                    </div>
+                    <div onclick="openCompose('diary')" class="bg-[#FF6B00] text-white px-3 py-1.5 rounded-xl pop-border pop-shadow-sm font-bold text-xs flex items-center gap-1 cursor-pointer active:scale-95 transition-transform">
+                        <i data-lucide="heart" class="w-3 h-3 fill-white"></i> 极好
+                    </div>
+                </div>
+
+                <div class="flex-1 flex items-center justify-center relative mt-4">
+                    <!-- 地台插画 -->
+                    <div class="absolute bottom-[10%] w-[140%] h-48 bg-[#FAF9F6]/40 pop-border rounded-t-[120px] border-dashed border-b-0 border-[#1A1A2E]/30"></div>
+                    <div class="absolute bottom-[15%] w-[100%] h-40 bg-white/60 pop-border rounded-t-[100px] border-b-0 border-[#1A1A2E]"></div>
+                    
+                    <!-- 漂浮星星装饰 -->
+                    <i data-lucide="sparkles" class="absolute top-[20%] left-[20%] text-white w-6 h-6 animate-pulse-soft"></i>
+                    <i data-lucide="star" class="absolute top-[30%] right-[25%] text-[#FF6B00] fill-[#FF6B00] w-4 h-4 animate-bounce delay-300"></i>
+                    
+                    <!-- 投喂动画元素 -->
+                    <div id="feed-animation" class="absolute top-1/4 hidden animate-bounce z-30 transition-all">
+                        <i data-lucide="cookie" class="w-12 h-12 text-[#1A1A2E] fill-[#FF6B00]"></i>
+                    </div>
+
+                    <!-- 音乐环绕特效 -->
+                    <div id="music-ring" class="absolute top-[45%] left-1/2 w-[280px] h-[280px] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 transition-opacity duration-500 z-10">
+                        <div class="w-full h-full animate-[orbit-spin_4s_linear_infinite] relative">
+                            <div class="absolute -top-2 left-1/2 -translate-x-1/2 animate-[counter-spin_4s_linear_infinite]"><i data-lucide="music" class="text-[#FF6B00] fill-[#FF6B00] w-7 h-7"></i></div>
+                            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 animate-[counter-spin_4s_linear_infinite]"><i data-lucide="music" class="text-[#34D399] w-8 h-8"></i></div>
+                            <div class="absolute top-1/2 -left-2 -translate-y-1/2 animate-[counter-spin_4s_linear_infinite]"><i data-lucide="music" class="text-white fill-white w-6 h-6 drop-shadow-md"></i></div>
+                            <div class="absolute top-1/2 -right-2 -translate-y-1/2 animate-[counter-spin_4s_linear_infinite]"><i data-lucide="music" class="text-[#FFE600] w-8 h-8"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- 互动宠物组 -->
+                    <div class="relative flex flex-col items-center z-20 -translate-y-8">
+                        <!-- 互动宠物 -->
+                        <div id="pet-body" onclick="pokePet()" class="cursor-pointer w-48 h-48 bg-white blob-shape pop-border pop-shadow relative flex flex-col items-center justify-center animate-float z-20 hover:scale-105">
+                            <div class="flex gap-8 mb-4 transition-all duration-200" id="pet-eyes">
+                                <div class="w-4 h-6 bg-[#1A1A2E] rounded-full flex justify-end p-1 transition-all"><div class="w-1.5 h-1.5 bg-white rounded-full"></div></div>
+                                <div class="w-4 h-6 bg-[#1A1A2E] rounded-full flex justify-end p-1 transition-all"><div class="w-1.5 h-1.5 bg-white rounded-full"></div></div>
+                            </div>
+                            <div id="pet-mouth" class="w-8 h-4 bg-[#FF6B00] rounded-b-full border-2 border-[#1A1A2E] transition-all duration-300"></div>
+                            <!-- 情绪特效 -->
+                            <i data-lucide="heart" id="pet-emotion" class="absolute -top-4 -right-4 w-8 h-8 text-[#FF6B00] fill-[#FF6B00] opacity-0 transition-opacity duration-300"></i>
+                        </div>
+                        <!-- 动态阴影 -->
+                        <div class="w-28 h-6 bg-[#1A1A2E]/20 rounded-[100%] mt-6 animate-float-shadow"></div>
+                    </div>
+
+                    <div class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-30">
+                        <button onclick="toggleMusic(this)" class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300"><i data-lucide="music"></i></button>
+                        <button onclick="takePhoto(this)" class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"><i data-lucide="camera"></i></button>
+                        <button onclick="openWardrobe(this)" class="w-12 h-12 bg-[#FF6B00] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"><i data-lucide="shirt"></i></button>
+                    </div>
+                </div>
+
+                <!-- 底部面板插画风升级 -->
+                <div class="bg-[#FAF9F6] rounded-t-[36px] pop-border border-b-0 p-6 z-20 pb-12 shadow-2xl relative">
+                    <!-- 装饰便签 -->
+                    <div class="absolute -top-3 left-8 w-12 h-4 bg-[#34D399] pop-border -rotate-3 z-30"></div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-5">
+                        <div onclick="openDiaryList()" class="bg-white p-4 rounded-[24px] pop-border pop-shadow-sm h-32 relative overflow-hidden flex flex-col group cursor-pointer hover:-translate-y-1 transition-transform">
+                            <!-- 插画背景 -->
+                            <div class="absolute right-0 bottom-0 w-16 h-16 bg-[#FFE600] rounded-tl-[100%] z-0 group-hover:scale-110 transition-transform"></div>
+                            <i data-lucide="book-heart" class="absolute right-2 bottom-2 w-8 h-8 text-[#1A1A2E] z-10 group-hover:scale-110 transition-transform"></i>
+                            
+                            <div class="flex items-center gap-2 mb-auto z-10">
+                                <div class="w-2 h-2 rounded-full bg-[#FF6B00]"></div>
+                                <span class="font-bold text-[10px] uppercase opacity-70 tracking-widest">心情手账</span>
+                            </div>
+                            <span class="font-black text-xl z-10">写日记</span>
+                        </div>
+                        <div onclick="openFarmModal()" class="bg-[#1A1A2E] text-white p-4 rounded-[24px] pop-border pop-shadow-sm h-32 relative overflow-hidden flex flex-col group cursor-pointer hover:-translate-y-1 transition-transform">
+                            <!-- 插画背景 -->
+                            <div class="absolute right-0 bottom-0 w-20 h-20 bg-[#34D399] rounded-tl-[100%] opacity-20 z-0 group-hover:scale-110 transition-transform"></div>
+                            <i data-lucide="sprout" class="absolute right-2 bottom-2 w-10 h-10 text-[#34D399] z-10 group-hover:scale-110 transition-transform"></i>
+
+                            <div class="flex items-center gap-2 mb-auto z-10">
+                                <div class="w-2 h-2 rounded-full bg-[#34D399]"></div>
+                                <span class="font-bold text-[10px] uppercase opacity-70 tracking-widest text-slate-300">成长/游戏</span>
+                            </div>
+                            <span class="font-black text-xl z-10">宠物农场</span>
+                        </div>
+                    </div>
+                    <button onclick="openSnackBox()" class="w-full bg-[#FF6B00] text-white py-4 rounded-[20px] pop-border pop-shadow-sm text-base font-black flex items-center justify-center gap-2 hover:bg-[#FF4500] active:scale-95 transition-all">
+                        <i data-lucide="cookie" class="fill-[#FFE600] text-[#1A1A2E]"></i> 投喂零食补给箱
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. 运动屏 (Workout) -->
+            <div id="screen-workout" class="screen bg-[#FF4500] p-6 relative overflow-hidden">
+                <div class="absolute inset-0 bg-comic-burst animate-spin-slow opacity-60 pointer-events-none"></div>
+                
+                <div class="mt-8 flex justify-between items-center z-10 relative">
+                    <h2 class="text-3xl font-black text-white italic tracking-wider drop-shadow-[3px_3px_0_#1A1A2E]">STRESS OUT</h2>
+                    <div class="bg-white px-4 py-2 rounded-2xl pop-border pop-shadow-sm font-black text-lg flex items-center gap-2">
+                        <i data-lucide="flame" class="text-[#FF4500] w-5 h-5 fill-[#FF4500] animate-pulse"></i>
+                        <span id="workout-hits" class="text-[#1A1A2E] text-2xl">0</span>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex items-center justify-center relative z-10">
+                    <!-- 夸张的爆炸背景插画 (隐藏于目标后，打击时显现) -->
+                    <svg id="burst-bg" class="absolute w-80 h-80 opacity-0 transition-opacity duration-100 scale-50 pointer-events-none z-10" viewBox="0 0 100 100">
+                        <path d="M50 0 L55 30 L95 15 L65 45 L100 60 L70 65 L85 95 L55 75 L30 100 L40 70 L5 80 L35 55 L0 35 L40 40 L15 5 Z" fill="#FFE600" stroke="#1A1A2E" stroke-width="2"/>
+                    </svg>
+
+                    <!-- 打击目标 -->
+                    <button onclick="hitWorkout(event)" id="workout-target" class="w-56 h-56 bg-[#1A1A2E] blob-shape pop-shadow relative flex flex-col items-center justify-center transition-all duration-100 ease-out z-20 hover:scale-105 active:scale-90">
+                        <span id="workout-text" class="text-white font-black text-3xl tracking-widest uppercase transition-all duration-100">ANXIETY</span>
+                    </button>
+                    <!-- 粒子生成容器 -->
+                    <div id="particle-container" class="absolute inset-0 pointer-events-none z-30"></div>
+                </div>
+
+                <div class="z-10 bg-white p-6 rounded-[32px] pop-border pop-shadow mb-4 relative">
+                    <!-- 装饰胶带 -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-4 bg-[#FFE600]/80 pop-border rotate-2 z-30"></div>
+                    
+                    <h4 class="font-black text-center mb-4 flex justify-center items-center gap-2 text-sm mt-2">
+                        <i data-lucide="hammer" class="w-5 h-5 text-[#FF6B00]"></i> 尽情敲击屏幕释放压力
+                    </h4>
+                    <div class="flex gap-3">
+                        <div class="flex-1 bg-slate-100 p-3 rounded-2xl text-center border-2 border-[#1A1A2E] relative overflow-hidden">
+                            <!-- 迷你图表插画 -->
+                            <svg class="absolute bottom-0 left-0 w-full h-8 opacity-20" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 20 L20 10 L40 15 L60 5 L80 12 L100 0 L100 20 Z" fill="#1A1A2E"/></svg>
+                            <p class="text-[10px] font-bold opacity-60 relative z-10">已释放</p>
+                            <p class="font-black text-lg relative z-10"><span id="stress-cal">120.0</span> <span class="text-xs">kcal</span></p>
+                        </div>
+                        <div class="flex-1 bg-[#FFE600] p-3 rounded-2xl text-center border-2 border-[#1A1A2E] relative overflow-hidden">
+                            <i data-lucide="medal" class="absolute -right-2 -bottom-2 w-12 h-12 opacity-20 text-[#1A1A2E]"></i>
+                            <p class="text-[10px] font-bold opacity-60 relative z-10">今日排名</p>
+                            <p class="font-black text-lg relative z-10" id="stress-rank">TOP 99%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 跑步屏 (Run) -->
+            <div id="screen-run" class="screen bg-pop-grid relative">
+                <div class="pt-14 pb-4 px-6 flex items-center justify-between z-10">
+                    <h1 class="text-xl font-black italic tracking-wider bg-white px-4 py-2 pop-border pop-shadow-sm rounded-[14px]">
+                        YOKA RUN <span class="text-[#FF6B00]">随风起跑</span>
+                    </h1>
+                    <div onclick="showToast('GPS路线定位与地图功能即将开放📍', 'info')" class="w-10 h-10 bg-[#FFE600] rounded-full pop-border pop-shadow-sm flex items-center justify-center cursor-pointer active:scale-90 transition-transform">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+                </div>
+                
+                <div class="flex-1 relative overflow-hidden mt-2 bg-gradient-to-b from-transparent to-[#34D399]/20 rounded-t-[40px] mx-2 border-t-4 border-x-4 border-white">
+                    
+                    <!-- 背景：几何山脉插画 -->
+                    <svg class="absolute bottom-[30%] w-full h-32 z-0 opacity-40" viewBox="0 0 100 50" preserveAspectRatio="none">
+                        <polygon points="0,50 15,20 30,50" fill="#34D399"/>
+                        <polygon points="20,50 45,10 70,50" fill="#FFE600"/>
+                        <polygon points="55,50 80,25 100,50" fill="#FF6B00"/>
+                        <!-- 地平线 -->
+                        <line x1="0" y1="50" x2="100" y2="50" stroke="#1A1A2E" stroke-width="2"/>
+                    </svg>
+
+                    <!-- 飘动的云朵 -->
+                    <div class="absolute top-10 left-[100%] animate-cloud opacity-80 z-0">
+                        <i data-lucide="cloud" class="w-16 h-16 text-white fill-white drop-shadow-md"></i>
+                    </div>
+                    <div class="absolute top-24 left-[100%] animate-cloud opacity-60 z-0" style="animation-duration: 18s; animation-delay: 4s;">
+                        <i data-lucide="cloud" class="w-10 h-10 text-white fill-white drop-shadow-sm"></i>
+                    </div>
+
+                    <!-- 跑步轨迹 -->
+                    <svg class="absolute inset-0 w-full h-full z-10 pointer-events-none" style="filter: drop-shadow(3px 3px 0px rgba(26,26,46,0.2))">
+                        <path id="run-track" d="M -50,350 C 100,200 250,400 300,150 C 350,0 450,200 350,400 C 250,600 150,500 100,600" fill="none" stroke="#1A1A2E" stroke-width="12" stroke-linecap="round"></path>
+                        <path id="run-track-inner" d="M -50,350 C 100,200 250,400 300,150 C 350,0 450,200 350,400 C 250,600 150,500 100,600" fill="none" stroke="#FF6B00" stroke-width="6" stroke-linecap="round" stroke-dasharray="15 20"></path>
+                    </svg>
+
+                    <!-- 附近的跑友和美食 -->
+                    <div onclick="interactUser('Kiki', this)" class="absolute top-[12%] left-[15%] flex flex-col items-center animate-float delay-100 cursor-pointer hover:scale-110 active:scale-90 transition-transform z-20 group">
+                        <div class="bg-[#34D399] p-2.5 rounded-full pop-border pop-shadow-sm mb-1 group-hover:bg-[#FFE600] transition-colors"><i data-lucide="smile" class="w-5 h-5 text-[#1A1A2E]"></i></div>
+                        <span class="text-[9px] font-black bg-white px-2 py-0.5 rounded pop-border shadow-sm text-[#1A1A2E]">跑友 Kiki</span>
+                    </div>
+                    <div onclick="interactFood('Manner 咖啡', '300m', this)" class="absolute top-[35%] right-[8%] flex flex-col items-center animate-float delay-500 cursor-pointer hover:scale-110 active:scale-90 transition-transform z-20 group">
+                        <div class="bg-[#FFE600] p-2.5 rounded-full pop-border pop-shadow-sm mb-1 relative group-hover:bg-[#FF6B00] transition-colors">
+                            <div class="absolute -top-2 -right-2 bg-[#FF4500] text-white text-[8px] font-black px-1.5 py-0.5 rounded-full border-2 border-[#1A1A2E] animate-pulse">HOT</div>
+                            <i data-lucide="coffee" class="w-5 h-5 text-[#1A1A2E] group-hover:text-white transition-colors"></i>
+                        </div>
+                        <span class="text-[9px] font-black bg-white px-2 py-0.5 rounded pop-border shadow-sm text-[#1A1A2E]">咖啡补给</span>
+                    </div>
+                    <div onclick="interactUser('Alex', this)" class="absolute bottom-[22%] right-[25%] flex flex-col items-center animate-float delay-300 cursor-pointer hover:scale-110 active:scale-90 transition-transform z-20 group">
+                        <div class="bg-white p-1 rounded-full pop-border pop-shadow-sm mb-1 overflow-hidden group-hover:-translate-y-1 transition-transform">
+                            <img src="https://api.dicebear.com/7.x/micah/svg?seed=alex&backgroundColor=transparent" class="w-8 h-8" alt="user">
+                        </div>
+                        <span class="text-[9px] font-black bg-white px-2 py-0.5 rounded pop-border shadow-sm text-[#1A1A2E]">大神 Alex</span>
+                    </div>
+                    <div onclick="interactFood('Shake Shack', '800m', this)" class="absolute bottom-[40%] left-[12%] flex flex-col items-center animate-float delay-700 cursor-pointer hover:scale-110 active:scale-90 transition-transform z-20 group">
+                        <div class="bg-[#FF6B00] p-2.5 rounded-full pop-border pop-shadow-sm mb-1 group-hover:bg-[#FFE600] transition-colors">
+                            <i data-lucide="pizza" class="w-5 h-5 text-white group-hover:text-[#1A1A2E] transition-colors"></i>
+                        </div>
+                        <span class="text-[9px] font-black bg-white px-2 py-0.5 rounded pop-border shadow-sm text-[#1A1A2E]">能量汉堡</span>
+                    </div>
+
+                    <!-- 跑者标记 -->
+                    <div class="absolute left-[40%] top-[60%] transform -translate-x-1/2 -translate-y-1/2 z-30">
+                        <div id="runner-marker" class="relative flex flex-col items-center transition-transform duration-300">
+                            <div id="runner-glow" class="absolute inset-0 bg-[#FFE600] rounded-full blur-md opacity-0 transition-opacity duration-300"></div>
+                            <div class="w-16 h-16 bg-white rounded-full pop-shadow flex items-center justify-center z-10 pop-border">
+                                <i data-lucide="figure-stand" id="runner-icon" class="text-[#1A1A2E] w-8 h-8 transition-all"></i>
+                            </div>
+                            <div id="speed-lines" class="absolute -left-6 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 transition-opacity">
+                                <div class="w-5 h-1.5 bg-[#FF6B00] rounded-full"></div>
+                                <div class="w-8 h-1.5 bg-[#FFE600] rounded-full translate-x-1 border border-[#1A1A2E]"></div>
+                                <div class="w-4 h-1.5 bg-[#34D399] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-t-[36px] pop-border border-b-0 p-6 z-30 flex flex-col gap-5 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] relative">
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-[#FFE600] p-4 rounded-3xl pop-border pop-shadow-sm hover:-translate-y-1 transition-transform flex flex-col items-center justify-center">
+                            <p class="text-[10px] font-bold opacity-70">距离 (km)</p>
+                            <p id="run-dist" class="text-2xl font-black mt-1">0.00</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-3xl pop-border pop-shadow-sm hover:-translate-y-1 transition-transform flex flex-col items-center justify-center">
+                            <p class="text-[10px] font-bold opacity-70">卡路里</p>
+                            <p id="run-cal" class="text-xl font-black mt-1">0</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-3xl pop-border pop-shadow-sm hover:-translate-y-1 transition-transform flex flex-col items-center justify-center">
+                            <p class="text-[10px] font-bold opacity-70">配速</p>
+                            <p id="run-pace" class="text-xl font-black mt-1">0.0'</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between bg-[#1A1A2E] rounded-[24px] p-2 pl-6 pop-shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                            <div id="run-time" class="text-white font-mono text-4xl font-black tracking-wider drop-shadow-md">00:00</div>
+                        </div>
+                        <button onclick="toggleRun()" id="run-btn" class="flex items-center justify-center gap-2 px-8 py-4 rounded-[18px] pop-border pop-shadow text-lg font-black bg-[#FF6B00] text-white hover:scale-105 active:scale-95 transition-all">
+                            <i data-lucide="play" id="run-btn-icon" class="w-6 h-6 fill-white"></i> <span>开始</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 树洞屏 (Echo Wall) - 全新稳固架构设计 -->
+            <div id="screen-echo" class="screen bg-pop-grid relative overflow-hidden">
+                
+                <!-- 真正的全屏滚动区域，内容在这里自然地在底部滚动 -->
+                <div class="absolute inset-0 w-full h-full overflow-y-auto hide-scrollbar px-6 pt-[200px] pb-32 z-10">
+                    <div class="staggered-grid">
+                        
+                        <!-- 卡片 1 (手账风 + 不对称圆角) -->
+                        <div class="staggered-item bg-[#FF6B00] p-4 rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px] pop-border pop-shadow -rotate-2 text-white hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
+                            <!-- 胶带装饰 -->
+                            <div class="absolute -top-2 left-4 w-10 h-3 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>
+                            
+                            <!-- 用户信息 -->
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=moon" alt="avatar"></div>
+                                <div>
+                                    <p class="text-[10px] font-black leading-none">不睡觉的修仙者</p>
+                                    <p class="text-[8px] opacity-75 mt-1">刚刚</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm font-black leading-relaxed">深夜的街头真的很安静，感觉可以听到自己的心跳声。突然就好想吃小龙虾和烧烤...</p>
+                            
+                            <!-- 互动数据区 -->
+                            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-white/30 pt-2">
+                                <span class="bg-white/20 px-1.5 py-0.5 rounded"># 深夜emo</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 12</div>
+                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
+                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">128</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 卡片 2 (职场) -->
+                        <div class="staggered-item bg-white p-4 rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px] pop-border pop-shadow rotate-2 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative" onclick="openEchoDetail(this)">
+                            <!-- 图钉装饰 -->
+                            <div class="absolute top-2 right-3 w-3 h-3 bg-[#34D399] rounded-full pop-border pop-shadow-sm z-10"></div>
+                            
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-blue-100"><img src="https://api.dicebear.com/7.x/micah/svg?seed=work" alt="avatar"></div>
+                                <div>
+                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">打工人之魂</p>
+                                    <p class="text-[8px] opacity-50 mt-1">10分钟前</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-black leading-relaxed text-[#1A1A2E]">终于鼓起勇气去面试了！面试官人很好，结果也很不错！大家也要加油呀✨ 明天必须奖励自己一杯全糖奶茶！</p>
+                            <div class="mt-3 flex items-center justify-between text-[#1A1A2E] text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
+                                <span class="bg-slate-100 px-1.5 py-0.5 rounded"># 职场吐槽</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 34</div>
+                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
+                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">342</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 卡片 3 (日常) -->
+                        <div class="staggered-item bg-[#FFE600] p-4 rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px] pop-border pop-shadow rotate-1 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
+                            <!-- 胶带装饰 -->
+                            <div class="absolute -top-1.5 right-4 w-8 h-3 bg-[#FF6B00]/80 pop-border rotate-6 z-10"></div>
+                            
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=cat" alt="avatar"></div>
+                                <div>
+                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">摸鱼达人</p>
+                                    <p class="text-[8px] opacity-60 mt-1">半小时前</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-black leading-relaxed text-[#1A1A2E]">今天的云彩特别像猫耳，有人发现了吗？拍照记录下来了📸 今天也是元气满满的一天！</p>
+                            <div class="mt-3 flex items-center justify-between text-[#1A1A2E] text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
+                                <span class="bg-white/40 px-1.5 py-0.5 rounded"># 日常碎片</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 8</div>
+                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
+                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">45</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 卡片 4 (治愈) -->
+                        <div class="staggered-item bg-[#34D399] p-4 rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px] pop-border pop-shadow -rotate-1 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2 text-[#1A1A2E]" onclick="openEchoDetail(this)">
+                            <!-- 图钉装饰 -->
+                            <div class="absolute top-3 left-3 w-3 h-3 bg-[#FFE600] rounded-full pop-border pop-shadow-sm z-10"></div>
+                            
+                            <div class="flex items-center gap-2 mb-2 ml-4">
+                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=food" alt="avatar"></div>
+                                <div>
+                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">碳水狂魔</p>
+                                    <p class="text-[8px] opacity-60 mt-1">1小时前</p>
+                                </div>
+                            </div>
+                            <p class="text-sm font-black leading-relaxed">虽然昨天的考试完全搞砸了，但今天吃到了一家巨好吃的拉面，心情瞬间就满血复活了。🍜 碳水果然使人快乐！</p>
+                            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
+                                <span class="bg-white/30 px-1.5 py-0.5 rounded"># 治愈</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 22</div>
+                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
+                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">89</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 绝对定位的毛玻璃头部，悬浮在滚动内容上方 -->
+                <div class="absolute top-0 left-0 right-0 z-40 bg-white/85 backdrop-blur-md px-6 pt-10 pb-4 pop-border border-t-0 border-l-0 border-r-0 rounded-b-[24px]">
+                    <i data-lucide="quote" class="absolute right-4 top-8 w-16 h-16 text-[#FFE600] fill-[#FFE600] opacity-30 -rotate-12 z-0 pointer-events-none"></i>
+                    
+                    <div class="relative z-10 flex flex-col gap-4">
+                        <div>
+                            <h2 class="text-3xl font-black italic tracking-tighter drop-shadow-[2px_2px_0_#fff]">ECHO WALL</h2>
+                            <p class="text-xs font-bold opacity-60 mt-1">听见世界的声音，倾诉你的秘密</p>
+                        </div>
+                        <div class="relative group">
+                            <input type="text" placeholder="搜索秘密..." class="w-full bg-white pop-border rounded-[16px] px-4 py-2.5 pl-10 text-sm font-bold focus:outline-none pop-shadow-sm transition-all group-focus-within:pop-shadow group-focus-within:-translate-y-0.5">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A1A2E]"></i>
+                        </div>
+                        <!-- 滑动分类标签 -->
+                        <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-2 px-2 pb-1">
+                            <button onclick="switchEchoCategory(this, '热门')" class="echo-cat-btn whitespace-nowrap bg-[#1A1A2E] text-white px-4 py-1.5 rounded-full pop-border pop-shadow-sm text-[11px] font-black hover:-translate-y-0.5 transition-transform active:scale-95">🌟 热门</button>
+                            <button onclick="switchEchoCategory(this, '深夜emo')" class="echo-cat-btn whitespace-nowrap bg-white text-[#1A1A2E] px-4 py-1.5 rounded-full pop-border pop-shadow-sm text-[11px] font-bold hover:-translate-y-0.5 transition-transform active:scale-95">🌙 深夜emo</button>
+                            <button onclick="switchEchoCategory(this, '职场吐槽')" class="echo-cat-btn whitespace-nowrap bg-white text-[#1A1A2E] px-4 py-1.5 rounded-full pop-border pop-shadow-sm text-[11px] font-bold hover:-translate-y-0.5 transition-transform active:scale-95">💼 职场吐槽</button>
+                            <button onclick="switchEchoCategory(this, '萌宠日常')" class="echo-cat-btn whitespace-nowrap bg-white text-[#1A1A2E] px-4 py-1.5 rounded-full pop-border pop-shadow-sm text-[11px] font-bold hover:-translate-y-0.5 transition-transform active:scale-95">🐾 萌宠日常</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部防断层渐变遮罩 -->
+                <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#FAF9F6] to-transparent pointer-events-none z-30"></div>
+
+                <!-- 悬浮精美药丸按钮 -->
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-40">
+                    <button onclick="openCompose('echo')" class="bg-[#1A1A2E] text-white px-8 py-3.5 rounded-full pop-border pop-shadow text-sm font-black flex items-center justify-center gap-2 hover:-translate-y-1 active:scale-95 transition-all whitespace-nowrap">
+                        <i data-lucide="pen-tool" class="text-[#FFE600] w-5 h-5"></i> <span>写下我的秘密</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. 我的屏 (Profile) -->
+            <div id="screen-profile" class="screen bg-pop-grid p-6 relative overflow-hidden">
+                <!-- 顶部波浪背景 -->
+                <div class="absolute top-0 left-0 right-0 h-48 bg-pop-stripes pop-border border-t-0 border-l-0 border-r-0 rounded-b-[40px] opacity-90 overflow-hidden">
+                    <svg class="absolute bottom-0 w-full h-12 text-white/20 fill-current" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 20 C30 0 70 20 100 0 L100 20 Z"/></svg>
+                </div>
+                
+                <div class="flex justify-between items-center z-10 relative mt-8 mb-4">
+                    <h2 class="text-xl font-black bg-white inline-block px-5 py-2 pop-border pop-shadow-sm rounded-[14px]">我的主页</h2>
+                    <button onclick="showToast('暂时没有新的消息通知哦 📭', 'info')" class="w-10 h-10 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center active:scale-90 transition-transform relative">
+                        <div class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full pop-border"></div>
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div onclick="openProfile()" class="bg-[#FFE600] rounded-[28px] p-5 pop-border pop-shadow mb-5 flex flex-col gap-4 z-10 relative group cursor-pointer transition-transform hover:-translate-y-1 active:scale-95">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <div class="w-20 h-20 bg-white rounded-full pop-border flex items-center justify-center overflow-hidden z-10 relative group-hover:scale-105 transition-transform">
+                                <img src="https://api.dicebear.com/7.x/micah/svg?seed=yoka_user&backgroundColor=transparent" alt="Avatar">
+                            </div>
+                            <div class="absolute -top-3 -right-2 rotate-12 z-20 animate-wiggle">
+                                <i data-lucide="crown" class="text-[#1A1A2E] fill-[#FF6B00] w-8 h-8 drop-shadow-sm"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-black mb-1 flex items-center gap-2">YOKA 体验官 <i data-lucide="check-circle-2" class="w-4 h-4 text-[#34D399] fill-white rounded-full"></i></h3>
+                            <div class="inline-block bg-[#1A1A2E] text-white text-[10px] font-black px-2 py-1 rounded-md pop-border">ID: 89757</div>
+                        </div>
+                    </div>
+                    <!-- 进度条区域 -->
+                    <div class="bg-white/50 p-3 rounded-2xl pop-border">
+                        <div class="flex justify-between text-[10px] font-black mb-1">
+                            <span>LV.5 运动达人</span>
+                            <span>650 / 1000 XP</span>
+                        </div>
+                        <div class="h-3 w-full bg-white rounded-full pop-border overflow-hidden">
+                            <div id="xp-progress" class="h-full bg-[#FF6B00] border-r-2 border-[#1A1A2E] animate-progress w-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 横向滑动的成就徽章墙 -->
+                <h4 class="font-black text-sm mb-3 flex items-center gap-2 z-10 relative"><i data-lucide="medal" class="w-4 h-4 text-[#FF6B00]"></i> 获得徽章</h4>
+                <div class="flex gap-3 mb-5 z-10 relative overflow-x-auto hide-scrollbar pb-2 pt-1 px-1 -mx-1">
+                    <div onclick="openBadge('sweat')" class="min-w-[72px] h-20 bg-white rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center gap-1 hover:-translate-y-1 transition-transform cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center border-2 border-[#1A1A2E]"><i data-lucide="droplets" class="w-4 h-4 text-blue-500 fill-blue-500"></i></div>
+                        <span class="text-[9px] font-black">汗水大师</span>
+                    </div>
+                    <div onclick="openBadge('early')" class="min-w-[72px] h-20 bg-white rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center gap-1 hover:-translate-y-1 transition-transform cursor-pointer">
+                        <div class="w-8 h-8 bg-[#FFE600] rounded-full flex items-center justify-center border-2 border-[#1A1A2E]"><i data-lucide="sun" class="w-4 h-4 text-[#FF6B00] fill-[#FF6B00]"></i></div>
+                        <span class="text-[9px] font-black">早鸟跑者</span>
+                    </div>
+                    <div onclick="openBadge('streak')" class="min-w-[72px] h-20 bg-white rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center gap-1 hover:-translate-y-1 transition-transform cursor-pointer">
+                        <div class="w-8 h-8 bg-[#34D399] rounded-full flex items-center justify-center border-2 border-[#1A1A2E]"><i data-lucide="leaf" class="w-4 h-4 text-white fill-white"></i></div>
+                        <span class="text-[9px] font-black">持续一周</span>
+                    </div>
+                    <div onclick="showToast('此神秘徽章尚未解锁哦 🔒', 'info')" class="min-w-[72px] h-20 bg-slate-100 rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center gap-1 opacity-60 cursor-pointer hover:-translate-y-1 transition-transform">
+                        <div class="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center border-2 border-slate-300"><i data-lucide="lock" class="w-4 h-4 text-slate-400"></i></div>
+                        <span class="text-[9px] font-bold text-slate-500">未解锁</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[28px] pop-border pop-shadow p-2 flex flex-col flex-1 z-10 relative mb-4">
+                    <button onclick="openAnalytics()" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-[20px] transition-colors active:scale-95 text-left group">
+                        <div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-orange-100 pop-border flex items-center justify-center group-hover:rotate-6 transition-transform"><i data-lucide="bar-chart-2" class="w-5 h-5 text-[#FF6B00]"></i></div><span class="font-black text-lg">运动数据</span></div><i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+                    </button>
+                    <button onclick="showToast('系统设置面板开发中 ⚙️', 'info')" class="flex items-center justify-between p-4 hover:bg-slate-50 rounded-[20px] transition-colors active:scale-95 text-left group">
+                        <div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl bg-slate-100 pop-border flex items-center justify-center group-hover:rotate-6 transition-transform"><i data-lucide="settings" class="w-5 h-5 text-slate-600"></i></div><span class="font-black text-lg">通用设置</span></div><i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 底部导航 -->
+        <nav class="h-24 bg-white flex justify-around items-center px-4 z-50 sm:rounded-b-[42px] relative" style="box-shadow: 0 -8px 30px rgba(26, 26, 46, 0.08)">
+            <button onclick="switchTab('home', this)" class="nav-item active flex flex-col items-center justify-center w-14 transition-all text-[#FF6B00] scale-110">
+                <i data-lucide="home"></i>
+                <span class="text-[10px] font-black mt-1">家园</span>
+            </button>
+            <button onclick="switchTab('workout', this)" class="nav-item flex flex-col items-center justify-center w-14 transition-all opacity-40 hover:opacity-100">
+                <i data-lucide="activity"></i>
+                <span class="text-[10px] font-black mt-1">解压</span>
+            </button>
+            
+            <!-- 中央主按钮 -->
+            <button onclick="switchTab('run', this)" class="nav-item-center relative -top-8 w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center pop-border pop-shadow bg-[#FFE600] text-[#1A1A2E] transform transition-transform hover:scale-105 active:scale-90">
+                <div class="absolute inset-1 rounded-full border-2 border-dashed border-[#1A1A2E] opacity-20 animate-spin-slow pointer-events-none"></div>
+                <i data-lucide="zap" class="w-8 h-8 fill-[#1A1A2E]"></i>
+            </button>
+            
+            <button onclick="switchTab('echo', this)" class="nav-item flex flex-col items-center justify-center w-14 transition-all opacity-40 hover:opacity-100">
+                <i data-lucide="message-square"></i>
+                <span class="text-[10px] font-black mt-1">树洞</span>
+            </button>
+            <button onclick="switchTab('profile', this)" class="nav-item flex flex-col items-center justify-center w-14 transition-all opacity-40 hover:opacity-100">
+                <i data-lucide="user"></i>
+                <span class="text-[10px] font-black mt-1">我的</span>
+            </button>
+        </nav>
+
+        <!-- Toast 提示容器 -->
+        <div id="toast-container" class="absolute top-12 left-1/2 transform -translate-x-1/2 z-[400] flex flex-col items-center gap-3 pointer-events-none w-[90%] max-w-[360px]"></div>
+
+        <!-- 全局背景音乐 -->
+        <audio id="bg-music" loop preload="auto">
+            <source src="https://music.163.com/song/media/outer/url?id=186001.mp3" type="audio/mpeg">
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- 快门闪光特效层 -->
+        <div id="camera-flash" class="absolute inset-0 bg-white z-[110] pointer-events-none opacity-0 transition-opacity duration-150"></div>
+
+        <!-- 拍立得照片弹窗层 -->
+        <div id="photo-modal" class="absolute inset-0 z-[105] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+            <div id="photo-card" class="bg-white p-4 pb-14 rounded-[20px] pop-border pop-shadow transform scale-90 transition-transform duration-300 relative w-[80%] max-w-[300px]">
+                <!-- 关闭按钮 -->
+                <button onclick="closePhoto()" class="absolute -top-4 -right-4 w-10 h-10 bg-[#FF4500] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-20">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                <!-- 照片定格区域 -->
+                <div id="photo-frame" class="w-full aspect-square bg-[#FFE600] rounded-[12px] pop-border flex items-center justify-center overflow-hidden relative"></div>
+                <!-- 拍立得底部文本 -->
+                <div class="mt-5 flex justify-between items-end px-2">
+                    <span class="text-2xl italic tracking-wider drop-shadow-sm" style="font-family: 'Black Han Sans', sans-serif;">SNAP!</span>
+                    <span class="font-bold text-xs opacity-40" id="photo-date">2026.03.20</span>
+                </div>
+                <!-- 装饰贴纸 -->
+                <div class="absolute bottom-2 right-4 text-4xl opacity-20 -rotate-12 pointer-events-none">✨</div>
+                <!-- 保存按钮 -->
+                <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%]">
+                     <button onclick="savePhoto()" class="w-full bg-[#34D399] text-[#1A1A2E] py-3 rounded-xl pop-border pop-shadow-sm font-black flex justify-center items-center gap-2 hover:bg-[#10B981] active:scale-95 transition-all">
+                         <i data-lucide="download" class="w-5 h-5"></i> 存入相册
+                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物衣橱弹窗层 -->
+        <div id="wardrobe-modal" class="absolute inset-0 z-[105] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeWardrobe()"></div>
+            <div id="wardrobe-panel" class="bg-[#FAF9F6] w-full rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative flex flex-col gap-5">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+                <div class="flex justify-between items-center mt-2">
+                    <h3 class="font-black text-xl italic drop-shadow-sm flex items-center gap-2">
+                        <i data-lucide="shirt" class="w-6 h-6 text-[#FF6B00] fill-[#FF6B00]"></i> MY WARDROBE
+                    </h3>
+                    <button onclick="closeWardrobe()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div class="grid grid-cols-4 gap-3 mt-2">
+                    <button onclick="changeSkin('default')" class="flex flex-col items-center gap-2 hover:-translate-y-1 active:scale-95 transition-transform group">
+                        <div class="w-full aspect-square bg-white rounded-[20px] pop-border pop-shadow-sm flex items-center justify-center group-hover:bg-slate-50 relative overflow-hidden">
+                            <div class="w-8 h-8 bg-white blob-shape border-2 border-[#1A1A2E]"></div>
+                        </div>
+                        <span class="text-[10px] font-black opacity-70">经典白</span>
+                    </button>
+                    <button onclick="changeSkin('dark')" class="flex flex-col items-center gap-2 hover:-translate-y-1 active:scale-95 transition-transform group">
+                        <div class="w-full aspect-square bg-[#1A1A2E] rounded-[20px] pop-border pop-shadow-sm flex items-center justify-center group-hover:bg-gray-800 relative overflow-hidden">
+                            <div class="w-8 h-8 bg-[#1A1A2E] blob-shape border-2 border-white/30"></div>
+                        </div>
+                        <span class="text-[10px] font-black opacity-70">暗夜黑</span>
+                    </button>
+                    <button onclick="changeSkin('slime')" class="flex flex-col items-center gap-2 hover:-translate-y-1 active:scale-95 transition-transform group">
+                        <div class="w-full aspect-square bg-[#34D399] rounded-[20px] pop-border pop-shadow-sm flex items-center justify-center group-hover:bg-emerald-300 relative overflow-hidden">
+                            <div class="w-8 h-8 bg-[#34D399] blob-shape border-2 border-[#1A1A2E]"></div>
+                        </div>
+                        <span class="text-[10px] font-black opacity-70">史莱姆</span>
+                    </button>
+                    <button onclick="changeSkin('berry')" class="flex flex-col items-center gap-2 hover:-translate-y-1 active:scale-95 transition-transform group">
+                        <div class="w-full aspect-square bg-pink-400 rounded-[20px] pop-border pop-shadow-sm flex items-center justify-center group-hover:bg-pink-300 relative overflow-hidden">
+                            <div class="w-8 h-8 bg-pink-400 blob-shape border-2 border-[#1A1A2E]"></div>
+                        </div>
+                        <span class="text-[10px] font-black opacity-70">莓果粉</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 零食补给箱弹窗 -->
+        <div id="snack-modal" class="absolute inset-0 z-[125] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <!-- 占位点击关闭 -->
+            <div class="flex-1 w-full" onclick="closeSnackBox()"></div>
+            
+            <div id="snack-panel" class="bg-[#FAF9F6] w-full h-[85%] rounded-t-[36px] pop-border border-b-0 p-6 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
+                <!-- 顶部拖拽指示条 -->
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+
+                <div class="flex justify-between items-center mb-2 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#FF6B00] p-1.5 rounded-xl border-2 border-[#1A1A2E] -rotate-3"><i data-lucide="cookie" class="text-white w-5 h-5"></i></div> SNACK BOX
+                    </h3>
+                    <button onclick="closeSnackBox()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <p class="text-xs font-bold opacity-60 mb-5 shrink-0">挑选一样美味零食，给小怪兽补充能量吧！</p>
+
+                <!-- 动态渲染零食卡片列表 -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar relative z-20 pb-10">
+                    <div id="snack-grid" class="grid grid-cols-2 gap-3 pb-8">
+                        <!-- JS 动态渲染 -->
+                    </div>
+                </div>
+                
+                <!-- 底部防断层渐变遮罩 -->
+                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#FAF9F6] to-transparent pointer-events-none z-30"></div>
+            </div>
+        </div>
+
+        <!-- 宠物农场/游乐场弹窗 -->
+        <div id="farm-modal" class="absolute inset-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeFarmModal()"></div>
+            <div id="farm-panel" class="bg-[#FAF9F6] w-full h-[90%] rounded-t-[36px] pop-border border-b-0 p-6 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+
+                <div class="flex justify-between items-center mb-4 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#34D399] p-1.5 rounded-xl border-2 border-[#1A1A2E] -rotate-3"><i data-lucide="sprout" class="text-white w-5 h-5"></i></div> PET WORLD
+                    </h3>
+                    <button onclick="closeFarmModal()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="flex gap-2 mb-4 shrink-0 bg-slate-100 p-1.5 rounded-full pop-border">
+                    <button onclick="switchFarmTab('farm')" id="tab-farm" class="flex-1 bg-white text-[#1A1A2E] py-2 rounded-full font-black text-sm pop-shadow-sm transition-all shadow-sm">开心农场</button>
+                    <button onclick="switchFarmTab('game')" id="tab-game" class="flex-1 text-slate-500 py-2 rounded-full font-bold text-sm transition-all hover:text-[#1A1A2E]">游乐场 (五子棋)</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto hide-scrollbar relative z-20">
+                    <!-- 农场视图 -->
+                    <div id="view-farm" class="flex flex-col h-full">
+                        <div class="bg-blue-50 p-4 rounded-[24px] pop-border mb-4 relative overflow-hidden">
+                            <i data-lucide="cloud" class="absolute top-2 right-4 text-white fill-white w-10 h-10 opacity-80 animate-cloud"></i>
+                            <i data-lucide="sun" class="absolute -top-2 -left-2 text-[#FFE600] fill-[#FFE600] w-12 h-12 animate-spin-slow"></i>
+                            <p class="font-black text-sm text-[#1A1A2E] text-center mt-2 relative z-10">种下种子，等待收获能量吧！</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-6 flex-1 max-h-[300px] relative" id="farm-grid"></div>
+                    </div>
+                    <!-- 游戏视图 -->
+                    <div id="view-game" class="hidden flex-col h-full items-center">
+                        <div class="w-full flex justify-between items-center mb-4 bg-white p-3 rounded-2xl pop-border pop-shadow-sm">
+                            <div class="flex items-center gap-2 font-black text-sm"><div class="w-4 h-4 bg-[#1A1A2E] rounded-full"></div> 我 (黑子)</div>
+                            <div class="text-[#FF6B00] font-black animate-pulse" id="gomoku-turn">你的回合</div>
+                            <div class="flex items-center gap-2 font-black text-sm">小怪兽 (白子) <div class="w-4 h-4 bg-white border-2 border-slate-300 rounded-full"></div></div>
+                        </div>
+                        <div class="bg-[#E4C183] p-1.5 pop-border pop-shadow rounded-[16px] w-full max-w-[340px] aspect-square relative">
+                            <div id="gomoku-board" class="w-full h-full grid grid-cols-10 gap-0 border-t border-l border-[rgba(26,26,46,0.3)]"></div>
+                        </div>
+                        <button onclick="resetGomoku()" class="mt-6 bg-[#1A1A2E] text-white px-8 py-3 rounded-full pop-border pop-shadow-sm font-black flex items-center gap-2 hover:-translate-y-1 active:scale-95 transition-all">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 重新开局
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心情手账列表弹窗 -->
+        <div id="diary-modal" class="absolute inset-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeDiaryList()"></div>
+            <div id="diary-panel" class="bg-[#FAF9F6] w-full h-[85%] rounded-t-[36px] pop-border border-b-0 p-6 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+                <div class="flex justify-between items-center mb-6 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#FFE600] p-1.5 rounded-xl border-2 border-[#1A1A2E] rotate-3"><i data-lucide="book-heart" class="text-[#1A1A2E] w-5 h-5"></i></div> MY DIARY
+                    </h3>
+                    <button onclick="closeDiaryList()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div id="diary-list-container" class="flex-1 overflow-y-auto hide-scrollbar flex flex-col gap-4 pb-24 pt-2 px-2 -mx-2 relative z-20"></div>
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-[70%]">
+                     <button onclick="openCompose('diary')" class="w-full bg-[#1A1A2E] text-[#FFE600] py-3.5 rounded-full pop-border pop-shadow font-black flex justify-center items-center gap-2 hover:-translate-y-1 active:scale-95 transition-all text-sm">
+                         <i data-lucide="pen-tool" class="w-5 h-5"></i> 记录今天
+                     </button>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#FAF9F6] to-transparent pointer-events-none z-10"></div>
+            </div>
+        </div>
+
+        <!-- 通用发布弹窗 (写日记/写秘密) -->
+        <div id="compose-modal" class="absolute inset-0 z-[120] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeCompose()"></div>
+            <div id="compose-panel" class="bg-[#FAF9F6] w-full rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+                <div class="absolute -top-2 left-8 w-16 h-4 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>
+                <div class="flex justify-between items-center mb-4 mt-2">
+                    <h3 id="compose-title" class="font-black text-xl italic drop-shadow-sm flex items-center gap-2">
+                        <i data-lucide="book-open" class="text-[#FF6B00]"></i> <span>记录此刻...</span>
+                    </h3>
+                    <button onclick="closeCompose()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div id="mood-selector" class="flex gap-3 mb-4 overflow-x-auto hide-scrollbar py-3 px-2 -mx-2">
+                    <button onclick="selectMood('😊', this)" class="mood-btn w-11 h-11 shrink-0 bg-[#FFE600] rounded-full pop-border pop-shadow-sm text-xl flex items-center justify-center transition-all scale-110">😊</button>
+                    <button onclick="selectMood('😆', this)" class="mood-btn w-11 h-11 shrink-0 bg-white rounded-full pop-border pop-shadow-sm text-xl flex items-center justify-center transition-all opacity-50 hover:opacity-100">😆</button>
+                    <button onclick="selectMood('🥺', this)" class="mood-btn w-11 h-11 shrink-0 bg-white rounded-full pop-border pop-shadow-sm text-xl flex items-center justify-center transition-all opacity-50 hover:opacity-100">🥺</button>
+                    <button onclick="selectMood('😡', this)" class="mood-btn w-11 h-11 shrink-0 bg-white rounded-full pop-border pop-shadow-sm text-xl flex items-center justify-center transition-all opacity-50 hover:opacity-100">😡</button>
+                    <button onclick="selectMood('😴', this)" class="mood-btn w-11 h-11 shrink-0 bg-white rounded-full pop-border pop-shadow-sm text-xl flex items-center justify-center transition-all opacity-50 hover:opacity-100">😴</button>
+                </div>
+                <textarea id="compose-input" rows="5" placeholder="今天发生了什么好玩的事？" class="w-full bg-[#FFFDF7] bg-ruled-paper pop-border rounded-[20px] p-4 pt-5 font-bold text-sm resize-none focus:outline-none pop-shadow-sm focus:pop-shadow transition-all mb-4 leading-8"></textarea>
+                <div class="flex justify-between items-center">
+                    <div class="flex gap-2">
+                        <button class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:-translate-y-1 active:scale-95 transition-transform text-[#FF6B00] group"><i data-lucide="image" class="w-5 h-5 group-hover:scale-110 transition-transform"></i></button>
+                        <button class="w-12 h-12 bg-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:-translate-y-1 active:scale-95 transition-transform text-[#34D399] group"><i data-lucide="hash" class="w-5 h-5 group-hover:scale-110 transition-transform"></i></button>
+                    </div>
+                    <button onclick="submitCompose()" class="bg-[#1A1A2E] text-[#FFE600] px-8 py-3.5 rounded-[20px] pop-border pop-shadow font-black flex items-center gap-2 hover:-translate-y-1 active:scale-95 transition-all text-base">
+                        <i data-lucide="send" class="w-5 h-5"></i> 封 存
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 运动数据分析弹窗 -->
+        <div id="analytics-modal" class="absolute inset-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <!-- 占位点击关闭 -->
+            <div class="flex-1 w-full" onclick="closeAnalytics()"></div>
+            
+            <div id="analytics-panel" class="bg-[#FAF9F6] w-full h-[96%] rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative flex flex-col">
+                <!-- 顶部拖拽指示条 -->
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+
+                <div class="flex justify-between items-center mb-5 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#FF6B00] p-1.5 rounded-xl border-2 border-[#1A1A2E] -rotate-3"><i data-lucide="bar-chart-2" class="text-white w-5 h-5"></i></div> DATA CENTER
+                    </h3>
+                    <button onclick="closeAnalytics()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <!-- 滚动内容区 -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar flex flex-col gap-5 relative z-20 pb-10 px-1 -mx-1">
+                    
+                    <!-- 总览数据卡片 -->
+                    <div class="bg-[#1A1A2E] text-white rounded-[24px] p-5 pop-border pop-shadow relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform duration-500"><i data-lucide="activity" class="w-32 h-32"></i></div>
+                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">本月累计里程</p>
+                        <div class="flex items-baseline gap-1 mb-5">
+                            <span class="text-5xl font-black italic drop-shadow-md">42.8</span>
+                            <span class="text-sm font-bold text-[#34D399]">km</span>
+                        </div>
+                        <div class="flex gap-6 border-t border-white/20 pt-4">
+                            <div>
+                                <p class="text-[10px] font-bold opacity-60 mb-1">消耗热量</p>
+                                <p class="text-xl font-black text-[#FFE600]">3,240 <span class="text-[10px] font-bold">kcal</span></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold opacity-60 mb-1">运动总时长</p>
+                                <p class="text-xl font-black text-[#FF6B00]">5.2 <span class="text-[10px] font-bold">h</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 活跃度柱状图 -->
+                    <div class="bg-white rounded-[24px] p-5 pop-border pop-shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-black text-sm">过去7天活跃度</span>
+                            <span class="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-1 rounded-md border border-emerald-200">较上周 +12%</span>
+                        </div>
+                        <div class="flex items-end justify-between h-36 gap-2 mt-2 pb-2">
+                            <!-- Bars -->
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-[#FFE600] rounded-t-md pop-border chart-bar" style="height: 40%"></div><span class="text-[10px] font-bold opacity-50">一</span></div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-[#FF6B00] rounded-t-md pop-border chart-bar" style="height: 70%; animation-delay: 0.1s"></div><span class="text-[10px] font-bold opacity-50">二</span></div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-slate-200 rounded-t-md pop-border chart-bar" style="height: 10%; animation-delay: 0.2s"></div><span class="text-[10px] font-bold opacity-50">三</span></div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-[#34D399] rounded-t-md pop-border chart-bar" style="height: 90%; animation-delay: 0.3s"></div><span class="text-[10px] font-bold opacity-50">四</span></div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-slate-200 rounded-t-md pop-border chart-bar" style="height: 20%; animation-delay: 0.4s"></div><span class="text-[10px] font-bold opacity-50">五</span></div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end">
+                                <div class="w-full bg-[#FF4500] rounded-t-md pop-border chart-bar relative" style="height: 100%; animation-delay: 0.5s">
+                                    <i data-lucide="flame" class="absolute -top-5 left-1/2 -translate-x-1/2 w-4 h-4 text-[#FF4500] fill-[#FF4500]"></i>
+                                </div>
+                                <span class="text-[10px] font-black text-[#1A1A2E]">六</span>
+                            </div>
+                            <div class="flex flex-col items-center flex-1 gap-2 h-full justify-end"><div class="w-full bg-[#FFE600] rounded-t-md pop-border chart-bar" style="height: 60%; animation-delay: 0.6s"></div><span class="text-[10px] font-bold opacity-50">日</span></div>
+                        </div>
+                    </div>
+
+                    <!-- AI 运动洞察 -->
+                    <h4 class="font-black text-sm flex items-center gap-2 mt-1"><i data-lucide="lightbulb" class="w-4 h-4 text-[#FF6B00] fill-[#FF6B00]"></i> AI 运动洞察</h4>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-[#34D399]/10 border-2 border-[#34D399] p-3 rounded-2xl relative overflow-hidden">
+                            <i data-lucide="moon" class="absolute -right-2 -bottom-2 w-12 h-12 text-[#34D399] opacity-20 fill-[#34D399]"></i>
+                            <i data-lucide="moon-star" class="w-5 h-5 text-[#34D399] mb-2"></i>
+                            <p class="text-xs font-black text-[#1A1A2E]">夜猫子跑者</p>
+                            <p class="text-[9px] font-bold opacity-60 mt-1 leading-relaxed">你通常在晚上 21:00 后开始活跃运动。</p>
+                        </div>
+                        <div class="bg-[#FF6B00]/10 border-2 border-[#FF6B00] p-3 rounded-2xl relative overflow-hidden">
+                            <i data-lucide="hammer" class="absolute -right-2 -bottom-2 w-12 h-12 text-[#FF6B00] opacity-20 fill-[#FF6B00]"></i>
+                            <i data-lucide="flame" class="w-5 h-5 text-[#FF6B00] fill-[#FF6B00] mb-2"></i>
+                            <p class="text-xs font-black text-[#1A1A2E]">解压狂人</p>
+                            <p class="text-[9px] font-bold opacity-60 mt-1 leading-relaxed">本周共敲击屏幕 1,204 次释放压力！</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人详细资料大弹窗 -->
+        <div id="profile-modal" class="absolute inset-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeProfile()"></div>
+            
+            <div id="profile-panel" class="bg-[#FAF9F6] w-full h-[96%] rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative flex flex-col">
+                <!-- 顶部拖拽指示条 -->
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+
+                <div class="flex justify-between items-center mb-5 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#34D399] p-1.5 rounded-xl border-2 border-[#1A1A2E] rotate-3"><i data-lucide="user-check" class="text-white w-5 h-5"></i></div> MY PROFILE
+                    </h3>
+                    <button onclick="closeProfile()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto hide-scrollbar flex flex-col gap-5 relative z-20 pb-10 px-1 -mx-1">
+                    
+                    <!-- 潮酷电子 ID 卡 -->
+                    <div class="bg-[#FFE600] rounded-[28px] p-5 pop-border pop-shadow relative overflow-hidden group">
+                        <!-- 背景装饰水印 -->
+                        <div class="absolute -right-10 -bottom-10 opacity-10 group-hover:rotate-12 transition-transform duration-500"><i data-lucide="fingerprint" class="w-48 h-48"></i></div>
+                        
+                        <div class="flex justify-between items-start mb-4 relative z-10">
+                            <div class="relative">
+                                <div class="w-20 h-20 bg-white rounded-full pop-border flex items-center justify-center overflow-hidden z-10 relative">
+                                    <img src="https://api.dicebear.com/7.x/micah/svg?seed=yoka_user&backgroundColor=transparent" alt="Avatar" class="w-full h-full object-cover">
+                                </div>
+                                <button onclick="showToast('更换头像功能即将上线', 'image')" class="absolute -bottom-1 -right-1 w-8 h-8 bg-[#FF6B00] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-90 transition-transform z-20">
+                                    <i data-lucide="camera" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="bg-[#1A1A2E] text-[#FFE600] px-3 py-1.5 rounded-xl pop-border font-black text-xs flex items-center gap-1 shadow-sm">
+                                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> YOKA ID
+                            </div>
+                        </div>
+                        
+                        <div class="relative z-10">
+                            <h2 class="text-2xl font-black mb-1 flex items-center gap-2">YOKA 体验官 <i data-lucide="badge-check" class="w-5 h-5 text-[#34D399] fill-white"></i></h2>
+                            <p class="text-xs font-bold opacity-80 mb-3 text-[#1A1A2E]">"今天也要努力奔跑，做自己的光！✨"</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-white/60 px-2 py-1 rounded-md text-[10px] font-black pop-border shadow-sm">📍 银河系</span>
+                                <span class="bg-white/60 px-2 py-1 rounded-md text-[10px] font-black pop-border shadow-sm">🏃‍♀️ 跑步爱好者</span>
+                                <span class="bg-white/60 px-2 py-1 rounded-md text-[10px] font-black pop-border shadow-sm">♊ 双子座</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 核心数据统计 -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white p-4 rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+                            <i data-lucide="calendar-heart" class="w-6 h-6 text-[#FF6B00] mb-1"></i>
+                            <p class="text-[10px] font-bold opacity-60">加入天数</p>
+                            <p class="text-xl font-black mt-1">128</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+                            <i data-lucide="book-open" class="w-6 h-6 text-[#34D399] mb-1"></i>
+                            <p class="text-[10px] font-bold opacity-60">手账/秘密</p>
+                            <p class="text-xl font-black mt-1">45</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-[20px] pop-border pop-shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+                            <i data-lucide="paw-print" class="w-6 h-6 text-[#FF4500] mb-1"></i>
+                            <p class="text-[10px] font-bold opacity-60">解锁宠物</p>
+                            <p class="text-xl font-black mt-1">4</p>
+                        </div>
+                    </div>
+
+                    <!-- 详细徽章收集墙 -->
+                    <h4 class="font-black text-sm flex items-center gap-2 mt-2"><i data-lucide="trophy" class="w-4 h-4 text-[#FFE600] fill-[#FFE600]"></i> 荣誉陈列室</h4>
+                    <div class="bg-[#1A1A2E] rounded-[24px] p-5 pop-border pop-shadow text-white relative">
+                        <!-- 进度提示 -->
+                        <div class="flex justify-between items-center mb-5 border-b border-white/20 pb-3">
+                            <span class="text-sm font-black">收集进度</span>
+                            <span class="text-xs font-bold bg-[#FFE600] text-[#1A1A2E] px-2.5 py-0.5 pop-border rounded-full">3 / 12</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-4 gap-4">
+                            <div onclick="openBadge('sweat')" class="flex flex-col items-center gap-2 relative cursor-pointer hover:scale-110 transition-transform">
+                                <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full pop-border flex items-center justify-center text-[8px] font-black z-10 animate-pulse">1</div>
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center pop-border pop-shadow-sm"><i data-lucide="droplets" class="w-6 h-6 text-blue-500 fill-blue-500"></i></div>
+                                <span class="text-[9px] font-black whitespace-nowrap">汗水大师</span>
+                            </div>
+                            <div onclick="openBadge('early')" class="flex flex-col items-center gap-2 cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center pop-border pop-shadow-sm"><i data-lucide="sun" class="w-6 h-6 text-[#FF6B00] fill-[#FF6B00]"></i></div>
+                                <span class="text-[9px] font-black whitespace-nowrap">早鸟跑者</span>
+                            </div>
+                            <div onclick="openBadge('streak')" class="flex flex-col items-center gap-2 cursor-pointer hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center pop-border pop-shadow-sm"><i data-lucide="leaf" class="w-6 h-6 text-[#34D399] fill-[#34D399]"></i></div>
+                                <span class="text-[9px] font-black whitespace-nowrap">持续一周</span>
+                            </div>
+                            <div onclick="showToast('解锁条件：成功孵化3只小怪兽', 'info')" class="flex flex-col items-center gap-2 opacity-40 grayscale cursor-pointer hover:opacity-80 transition-opacity">
+                                <div class="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center pop-border"><i data-lucide="lock" class="w-5 h-5 text-[#1A1A2E]"></i></div>
+                                <span class="text-[9px] font-bold">未解锁</span>
+                            </div>
+                            <div onclick="showToast('解锁条件：单次跑步突破 10km', 'info')" class="flex flex-col items-center gap-2 opacity-40 grayscale cursor-pointer hover:opacity-80 transition-opacity">
+                                <div class="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center pop-border"><i data-lucide="lock" class="w-5 h-5 text-[#1A1A2E]"></i></div>
+                                <span class="text-[9px] font-bold">未解锁</span>
+                            </div>
+                            <div onclick="showToast('解锁条件：在树洞收获 100 个赞', 'info')" class="flex flex-col items-center gap-2 opacity-40 grayscale cursor-pointer hover:opacity-80 transition-opacity">
+                                <div class="w-12 h-12 bg-slate-300 rounded-full flex items-center justify-center pop-border"><i data-lucide="lock" class="w-5 h-5 text-[#1A1A2E]"></i></div>
+                                <span class="text-[9px] font-bold">未解锁</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 底部操作按钮 -->
+                    <div class="flex gap-3 mt-2">
+                        <button onclick="showToast('进入个性化装扮模式 ✏️', 'info')" class="flex-1 bg-white text-[#1A1A2E] py-3.5 rounded-2xl pop-border pop-shadow-sm font-black flex items-center justify-center gap-2 hover:-translate-y-1 active:scale-95 transition-all">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> 编辑资料
+                        </button>
+                        <button onclick="showToast('个人专属名片生成中，准备闪耀朋友圈！', 'image')" class="flex-1 bg-[#34D399] text-[#1A1A2E] py-3.5 rounded-2xl pop-border pop-shadow-sm font-black flex items-center justify-center gap-2 hover:-translate-y-1 active:scale-95 transition-all">
+                            <i data-lucide="share-2" class="w-4 h-4"></i> 分享名片
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 徽章详情弹窗 -->
+        <div id="badge-modal" class="absolute inset-0 z-[140] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-6">
+            <div id="badge-card" class="bg-[#FFFDF7] w-full rounded-[36px] pop-border pop-shadow transform scale-90 transition-transform duration-300 relative p-6 flex flex-col items-center text-center">
+                <!-- 关闭按钮 -->
+                <button onclick="closeBadge()" class="absolute -top-4 -right-4 w-10 h-10 bg-[#1A1A2E] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-20">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                <!-- 动态内容将被注入到这里 -->
+                <div id="badge-content" class="w-full flex flex-col items-center"></div>
+            </div>
+        </div>
+
+        <!-- 树洞详情弹窗 -->
+        <div id="echo-detail-modal" class="absolute inset-0 z-[150] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+            <div class="flex-1 w-full" onclick="closeEchoDetail()"></div>
+            <div id="echo-detail-panel" class="bg-[#FAF9F6] w-full h-[90%] rounded-t-[36px] pop-border border-b-0 p-6 pb-0 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
+                <!-- 顶部拖拽指示条 -->
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
+
+                <div class="flex justify-between items-center mb-4 mt-2 shrink-0">
+                    <h3 class="font-black text-2xl italic drop-shadow-sm flex items-center gap-2">
+                        <div class="bg-[#34D399] p-1.5 rounded-xl border-2 border-[#1A1A2E] -rotate-3"><i data-lucide="message-square" class="text-white w-5 h-5"></i></div> ECHO DETAIL
+                    </h3>
+                    <button onclick="closeEchoDetail()" class="w-8 h-8 bg-[#1A1A2E] text-white rounded-full flex items-center justify-center active:scale-90 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <!-- 滚动详情内容区域 -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-32 pt-2 px-1 -mx-1" id="echo-detail-content">
+                    <!-- JS 会在这里动态填入被点击卡片的内容和底部评论 -->
+                </div>
+
+                <!-- 底部评论框 -->
+                <div class="absolute bottom-0 left-0 right-0 bg-white p-4 pop-border border-b-0 border-x-0 rounded-b-[36px] sm:rounded-b-[42px] z-30 flex gap-2 items-center pb-8 pt-4">
+                    <input type="text" placeholder="写下你的安慰与评论..." class="flex-1 bg-slate-100 pop-border rounded-full px-4 py-3 text-sm font-bold focus:outline-none focus:bg-white transition-colors">
+                    <button onclick="showToast('评论发送成功！能量+5', 'info'); document.querySelector('#echo-detail-modal input').value=''" class="w-12 h-12 shrink-0 bg-[#FF6B00] rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-transform">
+                        <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                    </button>
+                </div>
+                
+                <!-- 底部防断层渐变遮罩 -->
+                <div class="absolute bottom-[80px] left-0 right-0 h-16 bg-gradient-to-t from-[#FAF9F6] to-transparent pointer-events-none z-10"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // 页面加载及启动流逻辑
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        loadEchos();
+
+        // 1. 启动进度条动画 (Splash Screen)
+        setTimeout(() => {
+            const progress = document.getElementById('splash-progress');
+            if(progress) progress.style.width = '100%';
+        }, 200);
+
+        // 2. 1.5秒后滑出启动加载屏，露出下方的登录界面
+        setTimeout(() => {
+            const splash = document.getElementById('screen-splash');
+            if(splash) {
+                splash.style.transform = 'translateY(-100%)';
+                // 动画结束后移除 DOM
+                setTimeout(() => splash.remove(), 700);
+            }
+        }, 1500);
+    });
+
+    // 切换登录方式 (密码 / 验证码)
+    function switchLoginTab(type) {
+        const indicator = document.getElementById('login-tab-indicator');
+        const btnPwd = document.getElementById('tab-btn-pwd');
+        const btnCode = document.getElementById('tab-btn-code');
+        const formArea = document.getElementById('login-form-area');
+
+        // 动画切换 Tab
+        if(type === 'pwd') {
+            indicator.style.transform = 'translateX(0)';
+            btnPwd.classList.replace('text-slate-400', 'text-[#1A1A2E]');
+            btnPwd.classList.replace('font-bold', 'font-black');
+            btnCode.classList.replace('text-[#1A1A2E]', 'text-slate-400');
+            btnCode.classList.replace('font-black', 'font-bold');
+        } else {
+            indicator.style.transform = 'translateX(100%)';
+            btnCode.classList.replace('text-slate-400', 'text-[#1A1A2E]');
+            btnCode.classList.replace('font-bold', 'font-black');
+            btnPwd.classList.replace('text-[#1A1A2E]', 'text-slate-400');
+            btnPwd.classList.replace('font-black', 'font-bold');
+        }
+
+        // 切换表单内容
+        formArea.style.opacity = '0';
+        setTimeout(() => {
+            if(type === 'pwd') {
+                formArea.innerHTML = `
+                    <div class="relative group">
+                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> 账号</label>
+                        <input type="text" placeholder="Yoka ID / 手机号" class="w-full bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300" value="13888888888">
+                    </div>
+                    <div class="relative group">
+                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center justify-between">
+                            <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> 密码</span>
+                            <span class="text-[#FF6B00] cursor-pointer hover:underline transition-colors">忘记密码?</span>
+                        </label>
+                        <input type="password" placeholder="输入密码" class="w-full bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300" value="123456">
+                    </div>
+                `;
+            } else {
+                formArea.innerHTML = `
+                    <div class="relative group">
+                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center gap-1"><i data-lucide="smartphone" class="w-3 h-3"></i> 手机号</label>
+                        <input type="text" placeholder="输入手机号" class="w-full bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300">
+                    </div>
+                    <div class="relative group">
+                        <label class="text-[10px] font-black uppercase text-slate-500 mb-1.5 flex items-center gap-1"><i data-lucide="key-round" class="w-3 h-3"></i> 验证码</label>
+                        <div class="flex gap-2">
+                            <input type="text" placeholder="输入验证码" class="flex-1 bg-[#FAF9F6] pop-border rounded-[16px] px-4 py-3 w-1/2 text-sm font-bold focus:outline-none focus:bg-[#FFE600]/20 transition-colors placeholder:text-slate-300">
+                            <button onclick="getVerifyCode(this)" class="bg-[#FFE600] text-[#1A1A2E] px-4 rounded-[16px] pop-border pop-shadow-sm font-black text-xs hover:-translate-y-0.5 active:scale-95 transition-all whitespace-nowrap">获取验证码</button>
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons({ root: formArea });
+            formArea.style.opacity = '1';
+        }, 150);
+    }
+
+    // 模拟获取验证码
+    function getVerifyCode(btn) {
+        if(btn.disabled) return;
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        let count = 60;
+        btn.innerText = `${count}s 后重试`;
+        
+        const timer = setInterval(() => {
+            count--;
+            btn.innerText = `${count}s 后重试`;
+            if(count <= 0) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerText = '获取验证码';
+            }
+        }, 1000);
+        showToast('验证码发送成功，请注意查收 📱', 'info');
+    }
+
+    // 登录动作处理
+    function handleLogin() {
+        const agreement = document.getElementById('login-agreement');
+        const wrapper = document.getElementById('agreement-wrapper');
+        
+        if (!agreement.checked) {
+            // 未勾选协议时给予震动反馈提示
+            wrapper.classList.remove('shake-anim');
+            void wrapper.offsetWidth; // 触发重绘
+            wrapper.classList.add('shake-anim');
+            wrapper.querySelector('span').classList.add('text-red-500');
+            setTimeout(() => wrapper.querySelector('span').classList.remove('text-red-500'), 500);
+            return;
+        }
+
+        const btnText = document.getElementById('login-btn-text');
+        const btnIcon = document.getElementById('login-btn-icon');
+        const btn = document.getElementById('login-btn');
+        
+        // 变为加载中状态
+        btnText.innerText = 'CONNECTING...';
+        btnIcon.setAttribute('data-lucide', 'loader-2');
+        btnIcon.classList.add('animate-spin');
+        btnIcon.classList.remove('group-hover:translate-x-1');
+        lucide.createIcons({root: btn.parentElement});
+        
+        btn.classList.add('scale-95', 'opacity-90');
+        
+        // 模拟网络请求及登录过程 (1.2秒)
+        setTimeout(() => {
+            const loginScreen = document.getElementById('screen-login');
+            loginScreen.style.transform = 'translateY(-100%)';
+            
+            // 尝试初始化音频引擎（用户有点击交互了即可初始化）
+            try { initAudio(); } catch(e){}
+            
+            setTimeout(() => {
+                loginScreen.remove();
+                showToast('登录成功，欢迎回来！🎉', 'user');
+            }, 700); // 等待滑出动画完成
+        }, 1200);
+    }
+
+    let audioCtx;
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function playCameraSound() {
+        try {
+            initAudio();
+            const playBeep = (timeOffset, freq) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + timeOffset);
+                osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + timeOffset + 0.05);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime + timeOffset);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + timeOffset + 0.05);
+                osc.start(audioCtx.currentTime + timeOffset);
+                osc.stop(audioCtx.currentTime + timeOffset + 0.05);
+            };
+            playBeep(0, 1000);
+            playBeep(0.08, 800);
+        } catch (e) { console.warn('音频 API 不受支持'); }
+    }
+
+    function playPunchSound() {
+        try {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.15);
+        } catch (e) { console.warn('音频 API 不受支持'); }
+    }
+
+    function pokePet() {
+        const petBody = document.getElementById('pet-body');
+        const petEyes = document.getElementById('pet-eyes');
+        const eyes = petEyes.querySelectorAll('div > div');
+        
+        petBody.style.transform = 'scale(1.15, 0.85) translateY(10px)';
+        eyes.forEach(eye => eye.style.transform = 'scaleY(0.2)');
+
+        setTimeout(() => {
+            petBody.style.transform = '';
+            eyes.forEach(eye => eye.style.transform = '');
+        }, 300);
+    }
+
+    const snacks = [
+        { id: 'cookie', name: '香脆小饼干', icon: 'cookie', fill: '#FF6B00', color: '#1A1A2E', desc: '嘎嘣脆！补充日常基础碳水，好吃不胖。', energy: 15, tag: '经典口感', tagColor: 'bg-[#FF6B00]' },
+        { id: 'apple', name: '新鲜红苹果', icon: 'apple', fill: '#EF4444', color: '#1A1A2E', desc: '富含维生素C与膳食纤维，健康轻负担！', energy: 20, tag: '健康轻食', tagColor: 'bg-[#EF4444]' },
+        { id: 'pizza', name: '芝士大披萨', icon: 'pizza', fill: '#F59E0B', color: '#1A1A2E', desc: '满满的拉丝芝士，绝对的快乐热量炸弹！', energy: 35, tag: '高能大餐', tagColor: 'bg-[#F59E0B]' },
+        { id: 'ice-cream', name: '草莓冰淇淋', icon: 'ice-cream', fill: '#F472B6', color: '#1A1A2E', desc: '冰冰凉凉，多巴胺飙升，心情瞬间变好。', energy: 18, tag: '治愈甜品', tagColor: 'bg-[#F472B6]' },
+        { id: 'fish', name: '深海小肥鱼', icon: 'fish', fill: '#60A5FA', color: '#1A1A2E', desc: '富含优质深海DHA，让小怪兽变得更聪明！', energy: 25, tag: '优质蛋白', tagColor: 'bg-[#60A5FA]' },
+        { id: 'cherry', name: '快乐小樱桃', icon: 'cherry', fill: '#E11D48', color: '#1A1A2E', desc: '酸酸甜甜，充满初恋般的回味口感~', energy: 12, tag: '鲜嫩水果', tagColor: 'bg-[#E11D48]' }
+    ];
+    const petEmotions = ['heart', 'star', 'smile', 'sparkles', 'sun', 'party-popper'];
+
+    function openSnackBox() {
+        const modal = document.getElementById('snack-modal');
+        const panel = document.getElementById('snack-panel');
+        const container = document.getElementById('snack-grid');
+
+        // 渲染高颜值零食卡片
+        container.innerHTML = snacks.map(snack => `
+            <div onclick="feedSpecificPet('${snack.id}')" class="bg-white p-3 rounded-[20px] pop-border pop-shadow-sm hover:-translate-y-1 active:scale-95 transition-transform cursor-pointer relative overflow-hidden group flex flex-col h-full">
+                <!-- 底部超大水印图标 -->
+                <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-500">
+                    <i data-lucide="${snack.icon}" class="w-24 h-24" style="fill: ${snack.fill}; color: ${snack.color};"></i>
+                </div>
+                
+                <!-- 标签与能量值 -->
+                <div class="flex justify-between items-start mb-3 relative z-10">
+                    <div class="${snack.tagColor} text-white text-[9px] font-black px-1.5 py-0.5 rounded-md pop-border shadow-sm">${snack.tag}</div>
+                    <div class="font-black text-[11px] text-[#FF6B00] bg-[#FFE600] px-1.5 rounded-full border-2 border-[#1A1A2E]">⚡ +${snack.energy}</div>
+                </div>
+                
+                <!-- 标题与小图标 -->
+                <div class="relative z-10 flex items-center gap-2 mb-2">
+                    <div class="w-8 h-8 ${snack.tagColor}/20 rounded-full pop-border flex items-center justify-center bg-white shrink-0">
+                        <i data-lucide="${snack.icon}" class="w-4 h-4" style="fill: ${snack.fill}; color: ${snack.color};"></i>
+                    </div>
+                    <h4 class="font-black text-[13px] text-[#1A1A2E] leading-tight">${snack.name}</h4>
+                </div>
+                
+                <!-- 趣味描述 -->
+                <p class="text-[9px] font-bold text-[#1A1A2E]/60 relative z-10 leading-snug mt-auto border-t border-slate-100 pt-2">${snack.desc}</p>
+            </div>
+        `).join('');
+
+        lucide.createIcons({ root: container });
+
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeSnackBox() {
+        const modal = document.getElementById('snack-modal');
+        const panel = document.getElementById('snack-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    function feedSpecificPet(snackId) {
+        closeSnackBox();
+        
+        const snack = snacks.find(s => s.id === snackId);
+        if(!snack) return;
+
+        const foodContainer = document.getElementById('feed-animation');
+        const petBody = document.getElementById('pet-body');
+        const petMouth = document.getElementById('pet-mouth');
+        const energyVal = document.getElementById('energy-val');
+        
+        const emotion = petEmotions[Math.floor(Math.random() * petEmotions.length)];
+        const energyGained = snack.energy;
+
+        foodContainer.innerHTML = `<i data-lucide="${snack.icon}" class="w-12 h-12" style="color: ${snack.color}; fill: ${snack.fill}"></i>`;
+        lucide.createIcons({ root: foodContainer });
+
+        foodContainer.classList.remove('hidden');
+        petBody.classList.add('scale-110');
+        petMouth.style.height = '1.5rem';
+        petMouth.style.width = '2.5rem';
+        petMouth.style.borderRadius = '50%';
+
+        setTimeout(() => {
+            foodContainer.classList.add('hidden');
+            petBody.classList.remove('scale-110');
+            petMouth.style.height = '1rem';
+            petMouth.style.width = '2rem';
+            petMouth.style.borderRadius = '0 0 9999px 9999px';
+            
+            const oldEmotion = document.getElementById('pet-emotion');
+            const newEmotion = document.createElement('i');
+            newEmotion.setAttribute('data-lucide', emotion);
+            newEmotion.id = 'pet-emotion';
+            newEmotion.className = 'absolute -top-4 -right-4 w-8 h-8 text-[#FF6B00] fill-[#FFE600] opacity-0 transition-all duration-300 z-50';
+            oldEmotion.parentNode.replaceChild(newEmotion, oldEmotion);
+            lucide.createIcons({ root: newEmotion.parentNode });
+            
+            const currentEmotion = document.getElementById('pet-emotion');
+            
+            requestAnimationFrame(() => {
+                currentEmotion.classList.remove('opacity-0');
+                currentEmotion.classList.add('-translate-y-4', 'scale-125');
+            });
+            
+            createFireworks(petBody);
+
+            let currentEnergy = parseInt(energyVal.innerText);
+            energyVal.innerText = currentEnergy + energyGained;
+            energyVal.parentElement.classList.add('nav-pop-anim');
+            setTimeout(() => energyVal.parentElement.classList.remove('nav-pop-anim'), 300);
+
+            showToast(`投喂了 ${snack.name}！能量 +${energyGained}`, 'food');
+
+            setTimeout(() => {
+                const emo = document.getElementById('pet-emotion');
+                if(emo) {
+                    emo.classList.add('opacity-0');
+                    emo.classList.remove('-translate-y-4', 'scale-125');
+                }
+            }, 1200);
+        }, 1200);
+    }
+
+    function createFireworks(parentEl) {
+        const colors = ['#FF6B00', '#34D399', '#FFE600', '#F472B6', '#60A5FA', '#E11D48'];
+        const container = document.createElement('div');
+        container.className = 'absolute inset-0 pointer-events-none z-40';
+        parentEl.appendChild(container);
+
+        for (let i = 0; i < 12; i++) {
+            const particle = document.createElement('div');
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = Math.random() * 8 + 6;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = color;
+            particle.classList.add('firework-particle', 'pop-border');
+
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 60 + 50;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+            container.appendChild(particle);
+        }
+
+        setTimeout(() => {
+            if(parentEl.contains(container)) parentEl.removeChild(container);
+        }, 800);
+    }
+
+    let farmState = [0, 0, 0, 0, 0, 0];
+    let farmTimers = {};
+
+    function openFarmModal() {
+        renderFarm();
+        const modal = document.getElementById('farm-modal');
+        const panel = document.getElementById('farm-panel');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeFarmModal() {
+        const modal = document.getElementById('farm-modal');
+        const panel = document.getElementById('farm-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    function switchFarmTab(tab) {
+        const btnFarm = document.getElementById('tab-farm');
+        const btnGame = document.getElementById('tab-game');
+        const viewFarm = document.getElementById('view-farm');
+        const viewGame = document.getElementById('view-game');
+
+        if (tab === 'farm') {
+            btnFarm.className = 'flex-1 bg-white text-[#1A1A2E] py-2 rounded-full font-black text-sm pop-shadow-sm transition-all shadow-sm';
+            btnGame.className = 'flex-1 text-slate-500 py-2 rounded-full font-bold text-sm transition-all hover:text-[#1A1A2E]';
+            viewFarm.classList.remove('hidden');
+            viewFarm.classList.add('flex');
+            viewGame.classList.add('hidden');
+            viewGame.classList.remove('flex');
+        } else {
+            btnGame.className = 'flex-1 bg-white text-[#1A1A2E] py-2 rounded-full font-black text-sm pop-shadow-sm transition-all shadow-sm';
+            btnFarm.className = 'flex-1 text-slate-500 py-2 rounded-full font-bold text-sm transition-all hover:text-[#1A1A2E]';
+            viewGame.classList.remove('hidden');
+            viewGame.classList.add('flex');
+            viewFarm.classList.add('hidden');
+            viewFarm.classList.remove('flex');
+            if (gomokuBoard.length === 0) initGomoku();
+        }
+    }
+
+    function renderFarm() {
+        const grid = document.getElementById('farm-grid');
+        grid.innerHTML = '';
+        
+        farmState.forEach((state, index) => {
+            const plot = document.createElement('button');
+            plot.onclick = () => interactPlot(index);
+            plot.className = 'w-full aspect-square bg-[#8B4513] rounded-[16px] pop-border pop-shadow-sm relative flex flex-col items-center justify-center hover:-translate-y-1 active:scale-95 transition-all overflow-hidden group';
+            
+            plot.innerHTML += '<div class="absolute inset-0 opacity-20 bg-[radial-gradient(#1A1A2E_2px,transparent_2px)] [background-size:8px_8px]"></div>';
+
+            if (state === 0) {
+                plot.innerHTML += `<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform"><i data-lucide="plus" class="text-white w-4 h-4"></i></div><span class="text-[10px] text-white/60 font-bold mt-1">空闲</span>`;
+            } else if (state === 1) {
+                plot.innerHTML += `<div class="growing-crop"><i data-lucide="sprout" class="text-[#34D399] w-10 h-10 drop-shadow-md"></i></div><span class="text-[10px] text-[#FFE600] font-black mt-1 animate-pulse">生长中...</span>`;
+            } else if (state === 2) {
+                plot.innerHTML += `<div class="animate-bounce"><i data-lucide="carrot" class="text-[#FF6B00] fill-[#FF6B00] w-12 h-12 drop-shadow-lg"></i></div><span class="text-[10px] bg-white text-[#1A1A2E] px-2 rounded-full font-black mt-1 pop-border">可收获</span>`;
+            }
+            grid.appendChild(plot);
+        });
+        lucide.createIcons({ root: grid });
+    }
+
+    function interactPlot(index) {
+        if (farmState[index] === 0) {
+            farmState[index] = 1;
+            renderFarm();
+            
+            farmTimers[index] = setTimeout(() => {
+                farmState[index] = 2;
+                renderFarm();
+            }, 5000);
+        } else if (farmState[index] === 1) {
+            // growing
+        } else if (farmState[index] === 2) {
+            farmState[index] = 0;
+            renderFarm(); 
+            
+            const grid = document.getElementById('farm-grid');
+            createHarvestParticle(grid.children[index]);
+
+            showToast('收获大胡萝卜！能量 +20', 'farm');
+            
+            const energyVal = document.getElementById('energy-val');
+            energyVal.innerText = parseInt(energyVal.innerText) + 20;
+            energyVal.parentElement.classList.add('nav-pop-anim');
+            setTimeout(() => energyVal.parentElement.classList.remove('nav-pop-anim'), 300);
+        }
+    }
+
+    function createHarvestParticle(plotEl) {
+        if (!plotEl) return;
+        const particle = document.createElement('div');
+        particle.innerHTML = '<i data-lucide="zap" class="w-5 h-5 fill-[#FFE600] text-[#1A1A2E] inline-block mb-1"></i><span style="-webkit-text-stroke: 2px #1A1A2E;">+20</span>';
+        particle.className = 'absolute left-1/2 top-1/2 text-[#FFE600] font-black text-3xl pointer-events-none z-50 flex items-center justify-center gap-1 harvest-particle';
+        
+        plotEl.appendChild(particle);
+        lucide.createIcons({ root: particle });
+        
+        setTimeout(() => {
+            if(plotEl.contains(particle)) plotEl.removeChild(particle);
+        }, 1000);
+    }
+
+    const BOARD_SIZE = 10;
+    let gomokuBoard = [];
+    let gomokuCurrentPlayer = 1;
+    let gomokuGameOver = false;
+
+    function initGomoku() {
+        const boardEl = document.getElementById('gomoku-board');
+        boardEl.innerHTML = '';
+        gomokuBoard = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(0));
+        gomokuCurrentPlayer = 1;
+        gomokuGameOver = false;
+        document.getElementById('gomoku-turn').innerText = '你的回合';
+        document.getElementById('gomoku-turn').classList.add('animate-pulse');
+
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'gomoku-cell border-b border-r border-[rgba(26,26,46,0.3)] hover:bg-black/5 transition-colors';
+                cell.onclick = () => placeGomoku(r, c);
+                cell.id = `g-cell-${r}-${c}`;
+                boardEl.appendChild(cell);
+            }
+        }
+    }
+
+    function resetGomoku() {
+        initGomoku();
+    }
+
+    function placeGomoku(r, c) {
+        if (gomokuGameOver || gomokuBoard[r][c] !== 0 || gomokuCurrentPlayer !== 1) return;
+        
+        gomokuBoard[r][c] = 1;
+        drawStone(r, c, 1);
+        
+        if (checkGomokuWin(r, c, 1)) {
+            endGomoku(1);
+            return;
+        }
+
+        gomokuCurrentPlayer = 2;
+        document.getElementById('gomoku-turn').innerText = '小怪兽思考中...';
+        setTimeout(petGomokuMove, 800);
+    }
+
+    function drawStone(r, c, player) {
+        const cell = document.getElementById(`g-cell-${r}-${c}`);
+        const stone = document.createElement('div');
+        stone.className = `stone ${player === 1 ? 'stone-black' : 'stone-white'}`;
+        cell.appendChild(stone);
+        playPunchSound();
+    }
+
+    function petGomokuMove() {
+        if (gomokuGameOver) return;
+        
+        let bestScore = -1;
+        let bestMoves = [];
+
+        const evaluateSpot = (r, c, player) => {
+            let score = 0;
+            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
+            for (let [dr, dc] of dirs) {
+                let myCount = 1, oppCount = 1;
+                let emptyMy = 0, emptyOpp = 0;
+
+                for(let step=1; step<=4; step++) {
+                    let nr = r + dr*step, nc = c + dc*step;
+                    if(nr>=0 && nr<BOARD_SIZE && nc>=0 && nc<BOARD_SIZE) {
+                        if(gomokuBoard[nr][nc] === player) myCount++;
+                        else if(gomokuBoard[nr][nc] === 0) { emptyMy++; break; }
+                        else break;
+                    } else break;
+                }
+                for(let step=1; step<=4; step++) {
+                    let nr = r - dr*step, nc = c - dc*step;
+                    if(nr>=0 && nr<BOARD_SIZE && nc>=0 && nc<BOARD_SIZE) {
+                        if(gomokuBoard[nr][nc] === player) myCount++;
+                        else if(gomokuBoard[nr][nc] === 0) { emptyMy++; break; }
+                        else break;
+                    } else break;
+                }
+
+                let opp = player === 1 ? 2 : 1;
+                for(let step=1; step<=4; step++) {
+                    let nr = r + dr*step, nc = c + dc*step;
+                    if(nr>=0 && nr<BOARD_SIZE && nc>=0 && nc<BOARD_SIZE) {
+                        if(gomokuBoard[nr][nc] === opp) oppCount++;
+                        else if(gomokuBoard[nr][nc] === 0) { emptyOpp++; break; }
+                        else break;
+                    } else break;
+                }
+                for(let step=1; step<=4; step++) {
+                    let nr = r - dr*step, nc = c - dc*step;
+                    if(nr>=0 && nr<BOARD_SIZE && nc>=0 && nc<BOARD_SIZE) {
+                        if(gomokuBoard[nr][nc] === opp) oppCount++;
+                        else if(gomokuBoard[nr][nc] === 0) { emptyOpp++; break; }
+                        else break;
+                    } else break;
+                }
+
+                if (myCount >= 5) score += 100000;
+                if (oppCount >= 5) score += 50000;
+                if (myCount === 4 && emptyMy > 0) score += 10000;
+                if (oppCount === 4 && emptyOpp > 0) score += 8000;
+                if (myCount === 3 && emptyMy > 1) score += 1000;
+                if (oppCount === 3 && emptyOpp > 1) score += 800;
+                score += myCount * 10 + oppCount * 8;
+            }
+            return score;
+        };
+
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                if (gomokuBoard[r][c] === 0) {
+                    let score = evaluateSpot(r, c, 2);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMoves = [[r, c]];
+                    } else if (score === bestScore) {
+                        bestMoves.push([r, c]);
+                    }
+                }
+            }
+        }
+
+        if (bestMoves.length > 0) {
+            const move = bestMoves[Math.floor(Math.random() * bestMoves.length)];
+            gomokuBoard[move[0]][move[1]] = 2;
+            drawStone(move[0], move[1], 2);
+            
+            if (checkGomokuWin(move[0], move[1], 2)) {
+                endGomoku(2);
+                return;
+            }
+        }
+        
+        if (gomokuBoard.flat().every(cell => cell !== 0)) {
+            endGomoku(0);
+            return;
+        }
+
+        gomokuCurrentPlayer = 1;
+        document.getElementById('gomoku-turn').innerText = '你的回合';
+    }
+
+    function checkGomokuWin(r, c, player) {
+        const dirs = [[1,0], [0,1], [1,1], [1,-1]];
+        for (let [dr, dc] of dirs) {
+            let count = 1;
+            for (let i = 1; i < 5; i++) {
+                let nr = r + dr * i, nc = c + dc * i;
+                if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && gomokuBoard[nr][nc] === player) count++;
+                else break;
+            }
+            for (let i = 1; i < 5; i++) {
+                let nr = r - dr * i, nc = c - dc * i;
+                if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE && gomokuBoard[nr][nc] === player) count++;
+                else break;
+            }
+            if (count >= 5) return true;
+        }
+        return false;
+    }
+
+    function endGomoku(winner) {
+        gomokuGameOver = true;
+        const turnText = document.getElementById('gomoku-turn');
+        turnText.classList.remove('animate-pulse');
+        
+        if (winner === 1) {
+            turnText.innerText = '你赢啦！🎉';
+            showToast('恭喜击败小怪兽！能量+50', 'award');
+            const energyVal = document.getElementById('energy-val');
+            energyVal.innerText = parseInt(energyVal.innerText) + 50;
+        } else if (winner === 2) {
+            turnText.innerText = '小怪兽赢了哦 👻';
+            showToast('哎呀，差一点点就赢了，再试一次吧！', 'info');
+        } else {
+            turnText.innerText = '平局！🤝';
+            showToast('棋逢对手，是平局呢！', 'info');
+        }
+    }
+
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('active');
+            const scrollArea = s.querySelector('.overflow-y-auto');
+            if(scrollArea) scrollArea.scrollTop = 0;
+            
+            const progress = s.querySelector('.animate-progress');
+            if(progress) {
+                progress.classList.remove('animate-progress');
+                void progress.offsetWidth;
+            }
+        });
+        
+        const targetScreen = document.getElementById('screen-' + tabId);
+        targetScreen.classList.add('active');
+        
+        const progressTarget = targetScreen.querySelector('#xp-progress');
+        if(progressTarget) progressTarget.classList.add('animate-progress');
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('text-[#FF6B00]', 'scale-110', 'nav-pop-anim');
+            item.classList.add('opacity-40');
+        });
+        
+        if (el && el.classList.contains('nav-item')) {
+            el.classList.remove('opacity-40');
+            el.classList.add('text-[#FF6B00]', 'scale-110', 'nav-pop-anim');
+            setTimeout(() => el.classList.remove('nav-pop-anim'), 300);
+        } else if (el && el.classList.contains('nav-item-center')) {
+            el.classList.add('nav-pop-anim');
+            setTimeout(() => el.classList.remove('nav-pop-anim'), 300);
+        }
+    }
+
+    function takePhoto(btn) {
+        playCameraSound();
+        const icon = btn.querySelector('svg') || btn.querySelector('i');
+        if (icon) {
+            icon.classList.add('animate-bounce');
+            setTimeout(() => icon.classList.remove('animate-bounce'), 500);
+        }
+
+        const flash = document.getElementById('camera-flash');
+        flash.classList.remove('opacity-0');
+        flash.classList.add('opacity-100');
+        setTimeout(() => {
+            flash.classList.remove('opacity-100');
+            flash.classList.add('opacity-0');
+        }, 150);
+
+        const petBody = document.getElementById('pet-body');
+        const photoFrame = document.getElementById('photo-frame');
+        photoFrame.innerHTML = '';
+        const clonedPet = petBody.cloneNode(true);
+        clonedPet.removeAttribute('id');
+        clonedPet.removeAttribute('onclick');
+        clonedPet.classList.remove('cursor-pointer', 'hover:scale-105', 'animate-float', 'dance-anim');
+        clonedPet.style.transform = 'scale(1.2) translateY(-10px)';
+        clonedPet.style.animation = 'none';
+        const emotions = clonedPet.querySelectorAll('#pet-emotion');
+        emotions.forEach(emo => emo.removeAttribute('id'));
+
+        photoFrame.appendChild(clonedPet);
+
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+        document.getElementById('photo-date').innerText = dateStr;
+
+        setTimeout(() => {
+            const modal = document.getElementById('photo-modal');
+            const card = document.getElementById('photo-card');
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            card.classList.remove('scale-90');
+            card.classList.add('scale-100');
+        }, 300);
+    }
+
+    function closePhoto() {
+        const modal = document.getElementById('photo-modal');
+        const card = document.getElementById('photo-card');
+        card.classList.remove('scale-100');
+        card.classList.add('scale-90');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+    }
+
+    function savePhoto() {
+        closePhoto();
+        showToast('咔嚓！相片已保存至成长相册 📸', 'info');
+    }
+
+    const skins = {
+        'default': { body: 'bg-white', eyes: 'bg-[#1A1A2E]', pupil: 'bg-white', mouth: 'bg-[#FF6B00]' },
+        'dark':    { body: 'bg-[#1A1A2E]', eyes: 'bg-white', pupil: 'bg-[#1A1A2E]', mouth: 'bg-[#34D399]' },
+        'slime':   { body: 'bg-[#34D399]', eyes: 'bg-[#1A1A2E]', pupil: 'bg-white', mouth: 'bg-[#FFE600]' },
+        'berry':   { body: 'bg-pink-400', eyes: 'bg-[#1A1A2E]', pupil: 'bg-white', mouth: 'bg-[#1A1A2E]' }
+    };
+
+    function openWardrobe(btn) {
+        const icon = btn.querySelector('svg') || btn.querySelector('i');
+        if (icon) {
+            icon.classList.add('animate-bounce');
+            setTimeout(() => icon.classList.remove('animate-bounce'), 500);
+        }
+        const modal = document.getElementById('wardrobe-modal');
+        const panel = document.getElementById('wardrobe-panel');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeWardrobe() {
+        const modal = document.getElementById('wardrobe-modal');
+        const panel = document.getElementById('wardrobe-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    function changeSkin(skinId) {
+        const petBody = document.getElementById('pet-body');
+        const eyesContainers = document.querySelectorAll('#pet-eyes > div');
+        const pupils = document.querySelectorAll('#pet-eyes > div > div');
+        const petMouth = document.getElementById('pet-mouth');
+        const skin = skins[skinId];
+        if(!skin) return;
+
+        const allBodyColors = ['bg-white', 'bg-[#1A1A2E]', 'bg-[#34D399]', 'bg-pink-400'];
+        const allEyeColors = ['bg-[#1A1A2E]', 'bg-white'];
+        const allPupilColors = ['bg-white', 'bg-[#1A1A2E]'];
+        const allMouthColors = ['bg-[#FF6B00]', 'bg-[#34D399]', 'bg-[#FFE600]', 'bg-[#1A1A2E]'];
+
+        petBody.classList.remove(...allBodyColors);
+        petBody.classList.add(skin.body);
+        eyesContainers.forEach(e => {
+            e.classList.remove(...allEyeColors);
+            e.classList.add(skin.eyes);
+        });
+        pupils.forEach(p => {
+            p.classList.remove(...allPupilColors);
+            p.classList.add(skin.pupil);
+        });
+        petMouth.classList.remove(...allMouthColors);
+        petMouth.classList.add(skin.mouth);
+
+        petBody.classList.add('nav-pop-anim');
+        setTimeout(() => petBody.classList.remove('nav-pop-anim'), 300);
+        closeWardrobe();
+    }
+
+    let isPlayingMusic = false;
+    function toggleMusic(btn) {
+        isPlayingMusic = !isPlayingMusic;
+        const ring = document.getElementById('music-ring');
+        const pet = document.getElementById('pet-body');
+        const icon = btn.querySelector('svg') || btn.querySelector('i');
+        const audio = document.getElementById('bg-music');
+
+        if (isPlayingMusic) {
+            ring.classList.remove('opacity-0');
+            pet.classList.remove('animate-float');
+            pet.classList.add('dance-anim');
+            btn.classList.add('bg-[#1A1A2E]', 'text-white');
+            btn.classList.remove('bg-white');
+            if (icon) icon.classList.add('animate-bounce');
+            audio.play().catch(error => {
+                showToast('正在缓冲音乐...', 'info');
+            });
+        } else {
+            ring.classList.add('opacity-0');
+            pet.classList.remove('dance-anim');
+            pet.classList.add('animate-float');
+            btn.classList.remove('bg-[#1A1A2E]', 'text-white');
+            btn.classList.add('bg-white');
+            if (icon) icon.classList.remove('animate-bounce');
+            audio.pause();
+        }
+    }
+
+    let hits = 0;
+    const hitTexts = ['POW!', 'BAM!', 'CRASH!', 'BOOM!'];
+
+    function hitWorkout(event) {
+        playPunchSound();
+        hits++;
+        document.getElementById('workout-hits').innerText = hits;
+        document.getElementById('workout-hits').parentElement.classList.add('scale-110');
+        setTimeout(() => document.getElementById('workout-hits').parentElement.classList.remove('scale-110'), 150);
+
+        const target = document.getElementById('workout-target');
+        const text = document.getElementById('workout-text');
+        const screen = document.getElementById('screen-workout');
+        const container = document.getElementById('particle-container');
+        const burstBg = document.getElementById('burst-bg');
+        
+        screen.classList.remove('shake-anim');
+        void screen.offsetWidth; 
+        screen.classList.add('shake-anim');
+
+        burstBg.classList.remove('opacity-0', 'scale-50');
+        burstBg.classList.add('opacity-100', 'scale-110', 'rotate-12');
+
+        target.classList.add('bg-white', 'scale-[0.85]', 'rotate-3');
+        target.classList.remove('pop-shadow');
+        
+        const randomText = hitTexts[Math.floor(Math.random() * hitTexts.length)];
+        text.innerText = randomText;
+        text.classList.add('text-[#1A1A2E]', 'scale-150');
+
+        let currentCal = parseFloat(document.getElementById('stress-cal').innerText);
+        currentCal += 0.8;
+        document.getElementById('stress-cal').innerText = currentCal.toFixed(1);
+        
+        let rank = Math.max(1, 99 - Math.floor(hits / 8));
+        document.getElementById('stress-rank').innerText = 'TOP ' + rank + '%';
+
+        createParticle(event, container);
+
+        setTimeout(() => {
+            target.classList.remove('bg-white', 'scale-[0.85]', 'rotate-3');
+            target.classList.add('pop-shadow');
+            text.innerText = 'ANXIETY';
+            text.classList.remove('text-[#1A1A2E]', 'scale-150');
+            burstBg.classList.add('opacity-0', 'scale-50');
+            burstBg.classList.remove('opacity-100', 'scale-110', 'rotate-12');
+        }, 150);
+    }
+
+    function createParticle(event, container) {
+        const particle = document.createElement('div');
+        particle.innerText = '+1';
+        particle.className = 'absolute text-[#FFE600] font-black text-4xl pointer-events-none drop-shadow-md z-50';
+        
+        let x = '50%', y = '40%';
+        if (event && event.clientX) {
+            const rect = container.getBoundingClientRect();
+            x = (event.clientX - rect.left + (Math.random() - 0.5) * 60) + 'px';
+            y = (event.clientY - rect.top - 20) + 'px';
+        } else {
+            x = `calc(50% + ${(Math.random() - 0.5) * 100}px)`;
+        }
+
+        particle.style.left = x;
+        particle.style.top = y;
+        particle.style.transform = 'translate(-50%, -50%)';
+        particle.style.animation = 'particleFloat 0.8s ease-out forwards';
+        container.appendChild(particle);
+        setTimeout(() => {
+            if(container.contains(particle)) container.removeChild(particle);
+        }, 800);
+    }
+
+    let isRunning = false;
+    let runTime = 0, runDist = 0, runTimer = null;
+
+    function toggleRun() {
+        isRunning = !isRunning;
+        const btn = document.getElementById('run-btn');
+        const btnText = btn.querySelector('span');
+        const btnIcon = document.getElementById('run-btn-icon');
+        const trackInner = document.getElementById('run-track-inner');
+        const runner = document.getElementById('runner-marker');
+        const runnerIcon = document.getElementById('runner-icon');
+        const speedLines = document.getElementById('speed-lines');
+        const glow = document.getElementById('runner-glow');
+
+        if (isRunning) {
+            btnText.innerText = '暂停';
+            btnIcon.setAttribute('data-lucide', 'pause');
+            btnIcon.classList.replace('fill-white', 'fill-[#1A1A2E]');
+            btn.classList.replace('bg-[#FF6B00]', 'bg-white');
+            btn.classList.replace('text-white', 'text-[#1A1A2E]');
+            trackInner.classList.add('animate-track');
+            runner.classList.add('animate-bounce');
+            runnerIcon.setAttribute('data-lucide', 'person-standing');
+            speedLines.classList.remove('opacity-0');
+            glow.classList.remove('opacity-0');
+
+            runTimer = setInterval(() => {
+                runTime++; runDist += 0.002; updateRunUI();
+            }, 1000);
+        } else {
+            btnText.innerText = '继续';
+            btnIcon.setAttribute('data-lucide', 'play');
+            btnIcon.classList.replace('fill-[#1A1A2E]', 'fill-white');
+            btn.classList.replace('bg-white', 'bg-[#FF6B00]');
+            btn.classList.replace('text-[#1A1A2E]', 'text-white');
+            trackInner.classList.remove('animate-track');
+            runner.classList.remove('animate-bounce');
+            runnerIcon.setAttribute('data-lucide', 'figure-stand');
+            speedLines.classList.add('opacity-0');
+            glow.classList.add('opacity-0');
+            clearInterval(runTimer);
+        }
+        lucide.createIcons();
+    }
+
+    function updateRunUI() {
+        const m = Math.floor(runTime / 60).toString().padStart(2, '0');
+        const s = (runTime % 60).toString().padStart(2, '0');
+        document.getElementById('run-time').innerText = `${m}:${s}`;
+        document.getElementById('run-dist').innerText = runDist.toFixed(2);
+        document.getElementById('run-cal').innerText = Math.floor(runDist * 65);
+        document.getElementById('run-pace').innerText = runDist > 0 ? (runTime / 60 / runDist).toFixed(1) + "'" : "0.0'";
+    }
+
+    function showToast(message, iconType = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'bg-[#1A1A2E] text-white px-5 py-3.5 rounded-[20px] pop-border pop-shadow-sm font-black text-sm flex items-center gap-3 toast-anim shadow-2xl';
+        
+        let iconHtml = '';
+        if(iconType === 'user') iconHtml = '<div class="bg-[#FFE600] p-1.5 rounded-lg border-2 border-white"><i data-lucide="hand" class="w-4 h-4 text-[#1A1A2E] fill-[#1A1A2E]"></i></div>';
+        else if(iconType === 'food') iconHtml = '<div class="bg-[#FF6B00] p-1.5 rounded-lg border-2 border-white"><i data-lucide="utensils" class="w-4 h-4 text-white"></i></div>';
+        else if(iconType === 'award') iconHtml = '<div class="bg-[#34D399] p-1.5 rounded-lg border-2 border-white animate-bounce"><i data-lucide="award" class="w-4 h-4 text-white"></i></div>';
+        else if(iconType === 'farm') iconHtml = '<div class="bg-[#FF6B00] p-1.5 rounded-lg border-2 border-white animate-bounce"><i data-lucide="carrot" class="w-4 h-4 text-white fill-white"></i></div>';
+        else iconHtml = '<div class="bg-blue-400 p-1.5 rounded-lg border-2 border-white"><i data-lucide="info" class="w-4 h-4 text-white"></i></div>';
+
+        toast.innerHTML = `${iconHtml} <span class="flex-1 tracking-wide">${message}</span>`;
+        container.appendChild(toast);
+        lucide.createIcons({ root: toast });
+        setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 2500);
+    }
+
+    function interactUser(name, el) {
+        el.classList.add('nav-pop-anim');
+        setTimeout(() => el.classList.remove('nav-pop-anim'), 300);
+        showToast(`已向 ${name} 发送 High Five! ✋`, 'user');
+    }
+
+    function interactFood(name, distance, el) {
+        el.classList.add('nav-pop-anim');
+        setTimeout(() => el.classList.remove('nav-pop-anim'), 300);
+        showToast(`前方发现 ${name} (距 ${distance})`, 'food');
+    }
+
+    function toggleLike(btn, event) {
+        event.stopPropagation();
+        const icon = btn.querySelector('.like-icon');
+        const countSpan = btn.querySelector('.like-count');
+        let count = parseInt(countSpan.innerText);
+        const isLiked = icon.classList.contains('fill-[#FF4500]');
+        
+        btn.classList.add('scale-125');
+        setTimeout(() => btn.classList.remove('scale-125'), 150);
+
+        if (isLiked) {
+            icon.classList.remove('fill-[#FF4500]', 'text-[#FF4500]');
+            countSpan.innerText = count - 1;
+            countSpan.classList.remove('text-[#FF4500]');
+        } else {
+            icon.classList.add('fill-[#FF4500]', 'text-[#FF4500]');
+            countSpan.innerText = count + 1;
+            countSpan.classList.add('text-[#FF4500]');
+            if(navigator.vibrate) navigator.vibrate(50);
+        }
+    }
+
+    // --- 心情手账 (Diary) 数据与列表逻辑 ---
+    let diaryEntries = JSON.parse(localStorage.getItem('yoka_diaries')) || [
+        { id: 1, date: '2026.03.24', content: '今天的天气超级好，出去跑了3公里！感觉整个人都活过来了。晚上奖励了自己一杯奶茶🥤。', mood: '😊' },
+        { id: 2, date: '2026.03.22', content: '工作有点累，遇到了一个特别难搞的bug。好在最后解决了。希望能有个好梦🌙。', mood: '😫' }
+    ];
+
+    function openDiaryList() {
+        renderDiaryList();
+        const modal = document.getElementById('diary-modal');
+        const panel = document.getElementById('diary-panel');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeDiaryList() {
+        const modal = document.getElementById('diary-modal');
+        const panel = document.getElementById('diary-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    function renderDiaryList() {
+        const container = document.getElementById('diary-list-container');
+        if (diaryEntries.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full opacity-60 text-center pb-10">
+                    <div class="w-24 h-24 bg-white rounded-[24px] pop-border pop-shadow flex items-center justify-center mb-6 -rotate-6">
+                        <i data-lucide="pen-tool" class="w-10 h-10 text-[#FF6B00]"></i>
+                    </div>
+                    <p class="font-black text-sm text-[#1A1A2E]">手账本还是空的哦，<br>快来写下第一篇心情吧！</p>
+                </div>
+            `;
+            lucide.createIcons({root: container});
+            return;
+        }
+
+        const tapeColors = ['bg-[#34D399]', 'bg-[#FF6B00]', 'bg-[#FFE600]', 'bg-pink-400', 'bg-blue-400'];
+        const pinColors = ['bg-[#FF4500]', 'bg-[#FFE600]', 'bg-[#34D399]'];
+
+        container.innerHTML = diaryEntries.map((diary, index) => {
+            const isEven = index % 2 === 0;
+            const rotation = isEven ? 'rotate-1' : '-rotate-1';
+            const tapeColor = tapeColors[index % tapeColors.length];
+            const pinColor = pinColors[index % pinColors.length];
+            
+            const decoration = isEven 
+                ? `<div class="absolute -top-2 ${index % 3 === 0 ? 'left-4' : 'left-1/2 -translate-x-1/2'} w-12 h-4 ${tapeColor} opacity-90 pop-border -rotate-3 z-10"></div>`
+                : `<div class="absolute top-2 left-1/2 -translate-x-1/2 w-4 h-4 ${pinColor} rounded-full pop-border pop-shadow-sm flex items-center justify-center z-10"><div class="w-1.5 h-1.5 bg-white rounded-full"></div></div>`;
+
+            return `
+            <div class="bg-[#FFFDF7] p-5 rounded-[12px] pop-border pop-shadow-sm relative group hover:-translate-y-1 transition-transform ${rotation} mb-2 mt-2">
+                ${decoration}
+                <div class="flex justify-between items-start mb-3 border-b-2 border-dashed border-[#1A1A2E]/10 pb-3">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-black tracking-widest text-[#1A1A2E]">${diary.date}</span>
+                        <span class="text-[9px] font-bold opacity-40 uppercase">Memory</span>
+                    </div>
+                    <span class="text-3xl drop-shadow-sm hover:scale-125 transition-transform cursor-pointer origin-center">${diary.mood}</span>
+                </div>
+                <p class="text-sm font-bold leading-relaxed text-[#1A1A2E]/80 tracking-wide">${diary.content}</p>
+                ${index % 3 === 1 ? `<i data-lucide="sparkles" class="absolute bottom-2 right-2 w-5 h-5 text-[#FFE600] fill-[#FFE600] opacity-60"></i>` : ''}
+            </div>
+        `}).join('');
+        lucide.createIcons({root: container});
+    }
+
+    let composeType = 'diary';
+    let currentMood = '😊';
+    
+    function selectMood(mood, btn) {
+        currentMood = mood;
+        document.querySelectorAll('.mood-btn').forEach(b => {
+            b.classList.remove('bg-[#FFE600]', 'scale-110');
+            b.classList.add('bg-white', 'opacity-50');
+        });
+        btn.classList.remove('bg-white', 'opacity-50');
+        btn.classList.add('bg-[#FFE600]', 'scale-110');
+    }
+    
+    function openCompose(type) {
+        composeType = type;
+        const modal = document.getElementById('compose-modal');
+        const panel = document.getElementById('compose-panel');
+        const titleSpan = document.getElementById('compose-title').querySelector('span');
+        const input = document.getElementById('compose-input');
+        const moodSelector = document.getElementById('mood-selector');
+        
+        if(type === 'diary') {
+            titleSpan.innerText = '写心情手账';
+            input.placeholder = '今天发生了什么好玩的事？记录一下吧...';
+            moodSelector.style.display = 'flex';
+        } else {
+            titleSpan.innerText = '写下我的秘密';
+            input.placeholder = '在这个树洞里，你可以畅所欲言...';
+            moodSelector.style.display = 'none';
+        }
+        
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+
+        if(type === 'diary') {
+             const firstMoodBtn = moodSelector.querySelector('.mood-btn');
+             selectMood('😊', firstMoodBtn);
+        }
+    }
+
+    function closeCompose() {
+        const modal = document.getElementById('compose-modal');
+        const panel = document.getElementById('compose-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => { modal.classList.add('pointer-events-none', 'opacity-0'); }, 300);
+    }
+
+    function submitCompose() {
+        const input = document.getElementById('compose-input');
+        const content = input.value.trim();
+        if(content === '') { showToast('内容不能为空哦！', 'info'); return; }
+        
+        closeCompose();
+        input.value = '';
+        
+        setTimeout(() => {
+            if(composeType === 'diary') {
+                const today = new Date();
+                const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+                diaryEntries.unshift({ id: Date.now(), date: dateStr, content: content, mood: currentMood });
+                localStorage.setItem('yoka_diaries', JSON.stringify(diaryEntries));
+                renderDiaryList();
+                showToast('手账记录成功！宠物很开心✨', 'info');
+                const energyVal = document.getElementById('energy-val');
+                energyVal.innerText = parseInt(energyVal.innerText) + 50;
+                energyVal.parentElement.classList.add('nav-pop-anim');
+                setTimeout(() => energyVal.parentElement.classList.remove('nav-pop-anim'), 300);
+            } else {
+                const savedEchos = JSON.parse(localStorage.getItem('yoka_echos')) || [];
+                const newEcho = { id: Date.now(), content: content, time: new Date().getTime() };
+                savedEchos.unshift(newEcho);
+                localStorage.setItem('yoka_echos', JSON.stringify(savedEchos));
+
+                const container = document.querySelector('#screen-echo .staggered-grid');
+                if(container) {
+                    const html = generateEchoCardHtml(newEcho);
+                    container.insertAdjacentHTML('afterbegin', html);
+                    lucide.createIcons({ root: container });
+                }
+                showToast('秘密已随风飘荡在树洞中 🍃', 'info');
+            }
+        }, 400);
+    }
+
+    function loadEchos() {
+        const container = document.querySelector('#screen-echo .staggered-grid');
+        if (!container) return;
+        const savedEchos = JSON.parse(localStorage.getItem('yoka_echos')) || [];
+        if (savedEchos.length > 0) {
+            const html = savedEchos.map(generateEchoCardHtml).join('');
+            container.insertAdjacentHTML('afterbegin', html);
+            lucide.createIcons({ root: container });
+        }
+    }
+
+    function generateEchoCardHtml(echo) {
+        const echoStyles = [
+            { bg: 'bg-[#FF6B00]', text: 'text-white', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: '-rotate-2', tagBg: 'bg-white/20' },
+            { bg: 'bg-white', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: 'rotate-2', tagBg: 'bg-slate-100' },
+            { bg: 'bg-[#FFE600]', text: 'text-[#1A1A2E]', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: 'rotate-1', tagBg: 'bg-white/40' },
+            { bg: 'bg-[#34D399]', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: '-rotate-1', tagBg: 'bg-white/30' }
+        ];
+        const style = echoStyles[Math.floor(Math.random() * echoStyles.length)];
+        const hasTape = Math.random() > 0.5;
+        const tapeOrPin = hasTape
+            ? `<div class="absolute -top-2 left-4 w-10 h-3 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>`
+            : `<div class="absolute top-2 right-3 w-3 h-3 bg-[#FF4500] rounded-full pop-border pop-shadow-sm z-10"><div class="w-1 h-1 bg-white rounded-full mx-auto mt-0.5"></div></div>`;
+
+        return `
+        <div class="staggered-item ${style.bg} p-4 ${style.radius} pop-border pop-shadow ${style.rotate} ${style.text} hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
+            ${tapeOrPin}
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=${echo.id}&backgroundColor=transparent" alt="avatar"></div>
+                <div>
+                    <p class="text-[10px] font-black leading-none ${style.text}">匿名小怪兽</p>
+                    <p class="text-[8px] opacity-75 mt-1">刚刚</p>
+                </div>
+            </div>
+            <p class="text-sm font-black leading-relaxed">${echo.content}</p>
+            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-current/20 pt-2">
+                <span class="${style.tagBg} px-1.5 py-0.5 rounded"># 最新秘密</span>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 0</div>
+                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
+                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    function switchEchoCategory(btn, category) {
+        document.querySelectorAll('.echo-cat-btn').forEach(b => {
+            b.classList.remove('bg-[#1A1A2E]', 'text-white', 'font-black');
+            b.classList.add('bg-white', 'text-[#1A1A2E]', 'font-bold');
+        });
+        
+        btn.classList.remove('bg-white', 'text-[#1A1A2E]', 'font-bold');
+        btn.classList.add('bg-[#1A1A2E]', 'text-white', 'font-black');
+        
+        const container = document.querySelector('#screen-echo .staggered-grid');
+        if(container) {
+            container.style.transition = 'opacity 0.2s';
+            container.style.opacity = '0';
+            setTimeout(() => { container.style.opacity = '1'; }, 250);
+        }
+        showToast(`已为您筛选频道：${category} 📡`, 'info');
+    }
+
+    // --- 树洞详情弹窗 (Echo Detail) 逻辑 ---
+    function openEchoDetail(el) {
+        const modal = document.getElementById('echo-detail-modal');
+        const panel = document.getElementById('echo-detail-panel');
+        const contentContainer = document.getElementById('echo-detail-content');
+        
+        const cardContent = el.cloneNode(true);
+        cardContent.removeAttribute('onclick');
+        cardContent.className = cardContent.className.replace(/staggered-item|hover:rotate-0|hover:-translate-y-1|cursor-pointer|-rotate-\d|rotate-\d|mt-2/g, '').trim();
+        cardContent.classList.add('w-full', 'mb-6', 'rotate-0'); 
+        
+        contentContainer.innerHTML = '';
+        contentContainer.appendChild(cardContent);
+
+        contentContainer.innerHTML += `
+            <div class="flex items-center gap-2 mb-4 mt-2 px-1">
+                <h4 class="font-black text-sm"><i data-lucide="message-circle" class="w-4 h-4 text-[#FF6B00] inline-block mb-0.5"></i> 评论互动</h4>
+                <span class="bg-[#FFE600] text-[#1A1A2E] text-[10px] font-black px-2 py-0.5 rounded-full pop-border shadow-sm">2条</span>
+            </div>
+            <div class="flex flex-col gap-3 px-1">
+                <div class="bg-white p-3.5 rounded-[20px] pop-border pop-shadow-sm flex gap-3 group hover:-translate-y-1 transition-transform">
+                    <div class="w-8 h-8 rounded-full pop-border overflow-hidden bg-blue-100 shrink-0"><img src="https://api.dicebear.com/7.x/micah/svg?seed=c1" alt="avatar"></div>
+                    <div>
+                        <p class="text-[10px] font-black text-[#1A1A2E]">热心市民小王 <span class="opacity-40 font-bold ml-1">5分钟前</span></p>
+                        <p class="text-xs font-bold mt-1 text-[#1A1A2E]/80 leading-relaxed">抱抱楼主！一切都会好起来的，明天去吃顿好的犒劳自己吧！✨</p>
+                    </div>
+                </div>
+                <div class="bg-white p-3.5 rounded-[20px] pop-border pop-shadow-sm flex gap-3 group hover:-translate-y-1 transition-transform">
+                    <div class="w-8 h-8 rounded-full pop-border overflow-hidden bg-[#FFE600] shrink-0"><img src="https://api.dicebear.com/7.x/micah/svg?seed=c2" alt="avatar"></div>
+                    <div>
+                        <p class="text-[10px] font-black text-[#1A1A2E]">熬夜冠军 <span class="opacity-40 font-bold ml-1">刚刚</span></p>
+                        <p class="text-xs font-bold mt-1 text-[#1A1A2E]/80 leading-relaxed">深有体会+1，我昨晚也emo了，但是跑完步出了一身汗就好了很多，加油！🏃‍♀️</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        lucide.createIcons({ root: contentContainer });
+
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeEchoDetail() {
+        const modal = document.getElementById('echo-detail-modal');
+        const panel = document.getElementById('echo-detail-panel');
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    // --- 数据中心 (Analytics) 弹窗逻辑 ---
+    function openAnalytics() {
+        const modal = document.getElementById('analytics-modal');
+        const panel = document.getElementById('analytics-panel');
+        
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+
+        const bars = document.querySelectorAll('.chart-bar');
+        bars.forEach(bar => {
+            bar.style.animation = 'none';
+            void bar.offsetWidth;
+            bar.style.animation = null; 
+        });
+    }
+
+    function closeAnalytics() {
+        const modal = document.getElementById('analytics-modal');
+        const panel = document.getElementById('analytics-panel');
+        
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    // --- 个人资料 (Profile) 弹窗逻辑 ---
+    function openProfile() {
+        const modal = document.getElementById('profile-modal');
+        const panel = document.getElementById('profile-panel');
+        
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+    }
+
+    function closeProfile() {
+        const modal = document.getElementById('profile-modal');
+        const panel = document.getElementById('profile-panel');
+        
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+        modal.classList.remove('opacity-100');
+        setTimeout(() => modal.classList.add('pointer-events-none', 'opacity-0'), 300);
+    }
+
+    // --- 徽章详情 (Badge) 弹窗逻辑 ---
+    const badgeData = {
+        'sweat': {
+            title: '汗水大师',
+            icon: 'droplets',
+            color: 'text-blue-500 fill-blue-500',
+            bg: 'bg-blue-100',
+            desc: '汗水是你努力后，多巴胺凝结的形状。',
+            condition: '累计燃烧 1000 kcal 解锁',
+            date: '2026.03.15 获得'
+        },
+        'early': {
+            title: '早鸟跑者',
+            icon: 'sun',
+            color: 'text-[#FF6B00] fill-[#FF6B00]',
+            bg: 'bg-[#FFE600]',
+            desc: '清晨的第一缕阳光，总是属于最先起跑的你。',
+            condition: '早上 6:00 前完成一次晨跑解锁',
+            date: '2026.03.18 获得'
+        },
+        'streak': {
+            title: '持续一周',
+            icon: 'leaf',
+            color: 'text-white fill-white',
+            bg: 'bg-[#34D399]',
+            desc: '热爱可抵岁月漫长，坚持就是最大的胜利！',
+            condition: '连续 7 天登录 Yoka 打卡解锁',
+            date: '2026.03.20 获得'
+        }
+    };
+
+    function openBadge(id) {
+        const data = badgeData[id];
+        if (!data) return;
+
+        const content = document.getElementById('badge-content');
+        content.innerHTML = `
+            <div class="relative mb-6 mt-4">
+                <div class="absolute inset-0 ${data.bg} blur-xl opacity-60 rounded-full scale-150"></div>
+                <div class="w-24 h-24 ${data.bg} rounded-full pop-border pop-shadow flex items-center justify-center relative z-10 animate-bounce">
+                    <i data-lucide="${data.icon}" class="w-12 h-12 ${data.color}"></i>
+                </div>
+            </div>
+            <h3 class="text-2xl font-black mb-2 text-[#1A1A2E]">${data.title}</h3>
+            <div class="bg-[#FFE600] border-2 border-[#1A1A2E] px-3 py-1 rounded-full text-[10px] font-black inline-block mb-4 shadow-sm">✨ 成功点亮</div>
+            <p class="text-sm font-bold text-[#1A1A2E]/80 mb-2 italic">"${data.desc}"</p>
+            
+            <div class="w-full bg-[#FFFDF7] bg-ruled-paper rounded-2xl p-4 pop-border mt-3 relative overflow-hidden text-left">
+                <i data-lucide="award" class="absolute -right-4 -bottom-4 w-16 h-16 text-slate-200 opacity-50"></i>
+                <p class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">解锁条件</p>
+                <p class="text-xs font-black text-[#1A1A2E]">${data.condition}</p>
+            </div>
+            
+            <p class="text-[10px] font-bold text-slate-400 mt-5"><i data-lucide="calendar" class="w-3 h-3 inline-block relative -top-[1px]"></i> ${data.date}</p>
+            
+            <button onclick="showToast('徽章分享图片生成中，准备闪耀朋友圈！', 'image'); closeBadge();" class="mt-5 w-full bg-[#1A1A2E] text-[#FFE600] py-3.5 rounded-full pop-border pop-shadow font-black flex justify-center items-center gap-2 hover:-translate-y-1 active:scale-95 transition-all text-sm">
+                <i data-lucide="share-2" class="w-4 h-4"></i> 炫耀一下
+            </button>
+        `;
+        lucide.createIcons({ root: content });
+
+        const modal = document.getElementById('badge-modal');
+        const card = document.getElementById('badge-card');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-90');
+        card.classList.add('scale-100');
+    }
+
+    function closeBadge() {
+        const modal = document.getElementById('badge-modal');
+        const card = document.getElementById('badge-card');
+        card.classList.remove('scale-100');
+        card.classList.add('scale-90');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+    }
+</script>
+
+</body>
+</html>
