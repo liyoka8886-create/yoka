@@ -13,6 +13,8 @@
             font-family: 'Noto Sans SC', sans-serif;
             background-color: #e2e8f0;
             color: #1A1A2E;
+            min-height: 100vh; /* 兼容旧浏览器 */
+            min-height: 100dvh;
         }
 
         /* 基础潮玩描边与阴影 */
@@ -295,13 +297,56 @@
         }
         .pop-checkbox:checked { background-color: #FFE600; }
         .pop-checkbox:checked::before { transform: scale(1); }
+
+        /* === 固定画布适配：让手机端/网页端都按同一套 430x850 设计稿等比缩放 === */
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        #app-stage {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw;
+            height: 100vh; /* 兼容旧浏览器 */
+            height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #e2e8f0;
+        }
+        #app-scale {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 430px;
+            height: 850px;
+            transform: translate(-50%, -50%) scale(var(--app-scale, 1));
+            transform-origin: center center;
+            will-change: transform;
+        }
+        #phone-shell {
+            width: 430px;
+            height: 850px;
+            max-width: none;
+            max-height: none;
+        }
+        @supports (height: 100svh) {
+            #app-stage { height: 100svh; }
+            body { min-height: 100svh; }
+        }
+
     </style>
 </head>
 <body>
 
-<div class="flex justify-center items-center min-h-screen p-0 sm:p-4 overflow-hidden">
-    <!-- 手机外壳容器：强制设置圆角并优化高度防切边 -->
-    <div class="w-full max-w-[430px] h-[96vh] sm:h-[850px] bg-[#FFFDF7] rounded-[36px] sm:rounded-[42px] shadow-2xl overflow-hidden relative pop-border flex flex-col">
+<div id="app-stage">
+    <div id="app-scale">
+    <!-- 手机外壳容器：固定设计稿尺寸，外层负责等比缩放，避免手机端 UI 被压缩/裁切 -->
+    <div id="phone-shell" class="bg-[#FFFDF7] rounded-[42px] shadow-2xl overflow-hidden relative pop-border flex flex-col">
         
         <!-- 新增：启动加载屏 (Splash / Loading Screen) -->
         <div id="screen-splash" class="absolute inset-0 z-[300] bg-[#FF6B00] flex flex-col items-center justify-center transition-transform duration-700 ease-in-out">
@@ -658,106 +703,7 @@
                 <!-- 真正的全屏滚动区域，内容在这里自然地在底部滚动 -->
                 <div class="absolute inset-0 w-full h-full overflow-y-auto hide-scrollbar px-6 pt-[200px] pb-32 z-10">
                     <div class="staggered-grid">
-                        
-                        <!-- 卡片 1 (手账风 + 不对称圆角) -->
-                        <div class="staggered-item bg-[#FF6B00] p-4 rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px] pop-border pop-shadow -rotate-2 text-white hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
-                            <!-- 胶带装饰 -->
-                            <div class="absolute -top-2 left-4 w-10 h-3 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>
-                            
-                            <!-- 用户信息 -->
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=moon" alt="avatar"></div>
-                                <div>
-                                    <p class="text-[10px] font-black leading-none">不睡觉的修仙者</p>
-                                    <p class="text-[8px] opacity-75 mt-1">刚刚</p>
-                                </div>
-                            </div>
-                            
-                            <p class="text-sm font-black leading-relaxed">深夜的街头真的很安静，感觉可以听到自己的心跳声。突然就好想吃小龙虾和烧烤...</p>
-                            
-                            <!-- 互动数据区 -->
-                            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-white/30 pt-2">
-                                <span class="bg-white/20 px-1.5 py-0.5 rounded"># 深夜emo</span>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 12</div>
-                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
-                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">128</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 卡片 2 (职场) -->
-                        <div class="staggered-item bg-white p-4 rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px] pop-border pop-shadow rotate-2 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative" onclick="openEchoDetail(this)">
-                            <!-- 图钉装饰 -->
-                            <div class="absolute top-2 right-3 w-3 h-3 bg-[#34D399] rounded-full pop-border pop-shadow-sm z-10"></div>
-                            
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-blue-100"><img src="https://api.dicebear.com/7.x/micah/svg?seed=work" alt="avatar"></div>
-                                <div>
-                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">打工人之魂</p>
-                                    <p class="text-[8px] opacity-50 mt-1">10分钟前</p>
-                                </div>
-                            </div>
-                            <p class="text-sm font-black leading-relaxed text-[#1A1A2E]">终于鼓起勇气去面试了！面试官人很好，结果也很不错！大家也要加油呀✨ 明天必须奖励自己一杯全糖奶茶！</p>
-                            <div class="mt-3 flex items-center justify-between text-[#1A1A2E] text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
-                                <span class="bg-slate-100 px-1.5 py-0.5 rounded"># 职场吐槽</span>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 34</div>
-                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
-                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">342</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 卡片 3 (日常) -->
-                        <div class="staggered-item bg-[#FFE600] p-4 rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px] pop-border pop-shadow rotate-1 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
-                            <!-- 胶带装饰 -->
-                            <div class="absolute -top-1.5 right-4 w-8 h-3 bg-[#FF6B00]/80 pop-border rotate-6 z-10"></div>
-                            
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=cat" alt="avatar"></div>
-                                <div>
-                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">摸鱼达人</p>
-                                    <p class="text-[8px] opacity-60 mt-1">半小时前</p>
-                                </div>
-                            </div>
-                            <p class="text-sm font-black leading-relaxed text-[#1A1A2E]">今天的云彩特别像猫耳，有人发现了吗？拍照记录下来了📸 今天也是元气满满的一天！</p>
-                            <div class="mt-3 flex items-center justify-between text-[#1A1A2E] text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
-                                <span class="bg-white/40 px-1.5 py-0.5 rounded"># 日常碎片</span>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 8</div>
-                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
-                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">45</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 卡片 4 (治愈) -->
-                        <div class="staggered-item bg-[#34D399] p-4 rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px] pop-border pop-shadow -rotate-1 hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2 text-[#1A1A2E]" onclick="openEchoDetail(this)">
-                            <!-- 图钉装饰 -->
-                            <div class="absolute top-3 left-3 w-3 h-3 bg-[#FFE600] rounded-full pop-border pop-shadow-sm z-10"></div>
-                            
-                            <div class="flex items-center gap-2 mb-2 ml-4">
-                                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=food" alt="avatar"></div>
-                                <div>
-                                    <p class="text-[10px] font-black leading-none text-[#1A1A2E]">碳水狂魔</p>
-                                    <p class="text-[8px] opacity-60 mt-1">1小时前</p>
-                                </div>
-                            </div>
-                            <p class="text-sm font-black leading-relaxed">虽然昨天的考试完全搞砸了，但今天吃到了一家巨好吃的拉面，心情瞬间就满血复活了。🍜 碳水果然使人快乐！</p>
-                            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-[#1A1A2E]/10 pt-2">
-                                <span class="bg-white/30 px-1.5 py-0.5 rounded"># 治愈</span>
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 22</div>
-                                    <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
-                                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">89</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- 树洞卡片由 JS 动态渲染，默认 20 条 -->
                     </div>
                 </div>
 
@@ -883,7 +829,7 @@
             
             <!-- 中央主按钮 -->
             <button onclick="switchTab('run', this)" class="nav-item-center relative -top-8 w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center pop-border pop-shadow bg-[#FFE600] text-[#1A1A2E] transform transition-transform hover:scale-105 active:scale-90">
-                <div class="absolute inset-1 rounded-full border-2 border-dashed border-[#1A1A2E] opacity-20 animate-spin-slow pointer-events-none"></div>
+                <div class="absolute top-1 left-1 right-1 bottom-1 rounded-full border-2 border-dashed border-[#1A1A2E] opacity-20 animate-spin-slow pointer-events-none"></div>
                 <i data-lucide="zap" class="w-8 h-8 fill-[#1A1A2E]"></i>
             </button>
             
@@ -907,10 +853,10 @@
         </audio>
 
         <!-- 快门闪光特效层 -->
-        <div id="camera-flash" class="absolute inset-0 bg-white z-[110] pointer-events-none opacity-0 transition-opacity duration-150"></div>
+        <div id="camera-flash" class="absolute top-0 left-0 right-0 bottom-0 bg-white z-[110] pointer-events-none opacity-0 transition-opacity duration-150"></div>
 
         <!-- 拍立得照片弹窗层 -->
-        <div id="photo-modal" class="absolute inset-0 z-[105] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="photo-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[105] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
             <div id="photo-card" class="bg-white p-4 pb-14 rounded-[20px] pop-border pop-shadow transform scale-90 transition-transform duration-300 relative w-[80%] max-w-[300px]">
                 <!-- 关闭按钮 -->
                 <button onclick="closePhoto()" class="absolute -top-4 -right-4 w-10 h-10 bg-[#FF4500] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-20">
@@ -935,7 +881,7 @@
         </div>
 
         <!-- 宠物衣橱弹窗层 -->
-        <div id="wardrobe-modal" class="absolute inset-0 z-[105] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="wardrobe-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[105] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeWardrobe()"></div>
             <div id="wardrobe-panel" class="bg-[#FAF9F6] w-full rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative flex flex-col gap-5">
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
@@ -975,7 +921,7 @@
         </div>
 
         <!-- 零食补给箱弹窗 -->
-        <div id="snack-modal" class="absolute inset-0 z-[125] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="snack-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[125] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <!-- 占位点击关闭 -->
             <div class="flex-1 w-full" onclick="closeSnackBox()"></div>
             
@@ -1004,7 +950,7 @@
         </div>
 
         <!-- 宠物农场/游乐场弹窗 -->
-        <div id="farm-modal" class="absolute inset-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="farm-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeFarmModal()"></div>
             <div id="farm-panel" class="bg-[#FAF9F6] w-full h-[90%] rounded-t-[36px] pop-border border-b-0 p-6 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
@@ -1050,7 +996,7 @@
         </div>
 
         <!-- 心情手账列表弹窗 -->
-        <div id="diary-modal" class="absolute inset-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="diary-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[115] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeDiaryList()"></div>
             <div id="diary-panel" class="bg-[#FAF9F6] w-full h-[85%] rounded-t-[36px] pop-border border-b-0 p-6 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
@@ -1071,7 +1017,7 @@
         </div>
 
         <!-- 通用发布弹窗 (写日记/写秘密) -->
-        <div id="compose-modal" class="absolute inset-0 z-[120] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="compose-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[120] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeCompose()"></div>
             <div id="compose-panel" class="bg-[#FAF9F6] w-full rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative">
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/50 rounded-full"></div>
@@ -1103,7 +1049,7 @@
         </div>
 
         <!-- 运动数据分析弹窗 -->
-        <div id="analytics-modal" class="absolute inset-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="analytics-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <!-- 占位点击关闭 -->
             <div class="flex-1 w-full" onclick="closeAnalytics()"></div>
             
@@ -1186,7 +1132,7 @@
         </div>
 
         <!-- 个人详细资料大弹窗 -->
-        <div id="profile-modal" class="absolute inset-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="profile-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[130] bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeProfile()"></div>
             
             <div id="profile-panel" class="bg-[#FAF9F6] w-full h-[96%] rounded-t-[36px] pop-border border-b-0 p-6 pb-10 transform translate-y-full transition-transform duration-300 ease-out relative flex flex-col">
@@ -1303,7 +1249,7 @@
         </div>
 
         <!-- 徽章详情弹窗 -->
-        <div id="badge-modal" class="absolute inset-0 z-[140] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-6">
+        <div id="badge-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[140] flex items-center justify-center bg-[#1A1A2E]/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 px-6">
             <div id="badge-card" class="bg-[#FFFDF7] w-full rounded-[36px] pop-border pop-shadow transform scale-90 transition-transform duration-300 relative p-6 flex flex-col items-center text-center">
                 <!-- 关闭按钮 -->
                 <button onclick="closeBadge()" class="absolute -top-4 -right-4 w-10 h-10 bg-[#1A1A2E] text-white rounded-full pop-border pop-shadow-sm flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-20">
@@ -1315,7 +1261,7 @@
         </div>
 
         <!-- 树洞详情弹窗 -->
-        <div id="echo-detail-modal" class="absolute inset-0 z-[150] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
+        <div id="echo-detail-modal" class="absolute top-0 left-0 right-0 bottom-0 z-[150] bg-[#1A1A2E]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end overflow-hidden">
             <div class="flex-1 w-full" onclick="closeEchoDetail()"></div>
             <div id="echo-detail-panel" class="bg-[#FAF9F6] w-full h-[90%] rounded-t-[36px] pop-border border-b-0 p-6 pb-0 flex flex-col transform translate-y-full transition-transform duration-300 ease-out relative">
                 <!-- 顶部拖拽指示条 -->
@@ -1347,9 +1293,29 @@
         </div>
 
     </div>
+    </div>
 </div>
 
 <script>
+
+    // 固定设计稿缩放：430 x 850。手机、微信内置浏览器、桌面端都保持同样比例。
+    function updateAppScale() {
+        const designWidth = 430;
+        const designHeight = 850;
+        const safePadding = 16;
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        const vh = window.visualViewport ? window.visualViewport.height : (window.innerHeight || document.documentElement.clientHeight);
+        const scale = Math.min((vw - safePadding) / designWidth, (vh - safePadding) / designHeight, 1);
+        document.documentElement.style.setProperty('--app-scale', Math.max(scale, 0.1).toFixed(4));
+    }
+    updateAppScale();
+    window.addEventListener('resize', updateAppScale);
+    window.addEventListener('orientationchange', () => setTimeout(updateAppScale, 80));
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateAppScale);
+        window.visualViewport.addEventListener('scroll', updateAppScale);
+    }
+
     // 页面加载及启动流逻辑
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
@@ -1765,7 +1731,7 @@
             plot.onclick = () => interactPlot(index);
             plot.className = 'w-full aspect-square bg-[#8B4513] rounded-[16px] pop-border pop-shadow-sm relative flex flex-col items-center justify-center hover:-translate-y-1 active:scale-95 transition-all overflow-hidden group';
             
-            plot.innerHTML += '<div class="absolute inset-0 opacity-20 bg-[radial-gradient(#1A1A2E_2px,transparent_2px)] [background-size:8px_8px]"></div>';
+            plot.innerHTML += '<div class="absolute top-0 left-0 right-0 bottom-0 opacity-20 bg-[radial-gradient(#1A1A2E_2px,transparent_2px)] [background-size:8px_8px]"></div>';
 
             if (state === 0) {
                 plot.innerHTML += `<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform"><i data-lucide="plus" class="text-white w-4 h-4"></i></div><span class="text-[10px] text-white/60 font-bold mt-1">空闲</span>`;
@@ -1957,7 +1923,19 @@
             }
         }
         
-        if (gomokuBoard.flat().every(cell => cell !== 0)) {
+        // 兼容处理：不用 Array.prototype.flat()
+        let isFull = true;
+        for (let i = 0; i < gomokuBoard.length; i++) {
+            for (let j = 0; j < gomokuBoard[i].length; j++) {
+                if (gomokuBoard[i][j] === 0) {
+                    isFull = false;
+                    break;
+                }
+            }
+            if (!isFull) break;
+        }
+
+        if (isFull) {
             endGomoku(0);
             return;
         }
@@ -2069,7 +2047,9 @@
         photoFrame.appendChild(clonedPet);
 
         const today = new Date();
-        const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+        const monthStr = ('0' + (today.getMonth() + 1)).slice(-2);
+        const dateStrDay = ('0' + today.getDate()).slice(-2);
+        const dateStr = `${today.getFullYear()}.${monthStr}.${dateStrDay}`;
         document.getElementById('photo-date').innerText = dateStr;
 
         setTimeout(() => {
@@ -2306,8 +2286,8 @@
     }
 
     function updateRunUI() {
-        const m = Math.floor(runTime / 60).toString().padStart(2, '0');
-        const s = (runTime % 60).toString().padStart(2, '0');
+        const m = ('0' + Math.floor(runTime / 60)).slice(-2);
+        const s = ('0' + (runTime % 60)).slice(-2);
         document.getElementById('run-time').innerText = `${m}:${s}`;
         document.getElementById('run-dist').innerText = runDist.toFixed(2);
         document.getElementById('run-cal').innerText = Math.floor(runDist * 65);
@@ -2498,7 +2478,10 @@
         setTimeout(() => {
             if(composeType === 'diary') {
                 const today = new Date();
-                const dateStr = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+                const monthStr = ('0' + (today.getMonth() + 1)).slice(-2);
+                const dateStrDay = ('0' + today.getDate()).slice(-2);
+                const dateStr = `${today.getFullYear()}.${monthStr}.${dateStrDay}`;
+                
                 diaryEntries.unshift({ id: Date.now(), date: dateStr, content: content, mood: currentMood });
                 localStorage.setItem('yoka_diaries', JSON.stringify(diaryEntries));
                 renderDiaryList();
@@ -2509,62 +2492,138 @@
                 setTimeout(() => energyVal.parentElement.classList.remove('nav-pop-anim'), 300);
             } else {
                 const savedEchos = JSON.parse(localStorage.getItem('yoka_echos')) || [];
-                const newEcho = { id: Date.now(), content: content, time: new Date().getTime() };
+                const newEchoCategory = currentEchoCategory && currentEchoCategory !== '热门' ? currentEchoCategory : '深夜emo';
+                const newEcho = {
+                    id: Date.now(),
+                    content: content,
+                    time: new Date().getTime(),
+                    timeLabel: '刚刚',
+                    author: '匿名小怪兽',
+                    avatarSeed: `new-${Date.now()}`,
+                    category: newEchoCategory,
+                    tag: newEchoCategory,
+                    comments: 0,
+                    likes: 0,
+                    styleIndex: savedEchos.length % 4
+                };
                 savedEchos.unshift(newEcho);
                 localStorage.setItem('yoka_echos', JSON.stringify(savedEchos));
 
-                const container = document.querySelector('#screen-echo .staggered-grid');
-                if(container) {
-                    const html = generateEchoCardHtml(newEcho);
-                    container.insertAdjacentHTML('afterbegin', html);
-                    lucide.createIcons({ root: container });
-                }
+                loadEchos();
                 showToast('秘密已随风飘荡在树洞中 🍃', 'info');
             }
         }, 400);
     }
 
-    function loadEchos() {
-        const container = document.querySelector('#screen-echo .staggered-grid');
-        if (!container) return;
-        const savedEchos = JSON.parse(localStorage.getItem('yoka_echos')) || [];
-        if (savedEchos.length > 0) {
-            const html = savedEchos.map(generateEchoCardHtml).join('');
-            container.insertAdjacentHTML('afterbegin', html);
-            lucide.createIcons({ root: container });
-        }
+    const defaultEchoPosts = [
+        { id: 'echo-01', author: '不睡觉的修仙者', avatarSeed: 'moon', timeLabel: '刚刚', category: '深夜emo', tag: '深夜emo', content: '深夜的街头真的很安静，感觉可以听到自己的心跳声。突然就好想吃小龙虾和烧烤...', comments: 12, likes: 128, styleIndex: 0 },
+        { id: 'echo-02', author: '打工人之魂', avatarSeed: 'work', timeLabel: '10分钟前', category: '职场吐槽', tag: '职场吐槽', content: '终于鼓起勇气去面试了！面试官人很好，结果也很不错！大家也要加油呀✨ 明天必须奖励自己一杯全糖奶茶！', comments: 34, likes: 342, styleIndex: 1 },
+        { id: 'echo-03', author: '猫粮管理员', avatarSeed: 'cat', timeLabel: '半小时前', category: '萌宠日常', tag: '萌宠日常', content: '今天的云彩特别像猫耳，家里的小猫还对着窗外喵喵叫，像是在和天空打招呼。拍照记录下来了📸', comments: 18, likes: 96, styleIndex: 2 },
+        { id: 'echo-04', author: '碳水狂魔', avatarSeed: 'food', timeLabel: '1小时前', category: '深夜emo', tag: '深夜emo', content: '虽然昨天考试完全搞砸了，但今天吃到一家巨好吃的拉面，心情瞬间满血复活。🍜 深夜碳水果然使人快乐！', comments: 22, likes: 89, styleIndex: 3 },
+        { id: 'echo-05', author: '表格受害者', avatarSeed: 'excel', timeLabel: '1小时前', category: '职场吐槽', tag: '职场吐槽', content: '今天改了第 7 版方案，文件名已经从 final 变成 final_final_真的最终版。谁懂这一刻的沉默。', comments: 41, likes: 210, styleIndex: 0 },
+        { id: 'echo-06', author: '狗勾翻译官', avatarSeed: 'dog', timeLabel: '2小时前', category: '萌宠日常', tag: '萌宠日常', content: '下班回家一开门，狗狗叼着玩具冲过来，尾巴摇成小风扇。那一秒感觉全世界都在欢迎我。🐶', comments: 16, likes: 133, styleIndex: 1 },
+        { id: 'echo-07', author: '凌晨便利店', avatarSeed: 'night-store', timeLabel: '2小时前', category: '深夜emo', tag: '深夜emo', content: '刚刚去便利店买关东煮，店员说“路上小心”。好普通一句话，却突然被安慰到了。', comments: 27, likes: 176, styleIndex: 2 },
+        { id: 'echo-08', author: '会议黑洞', avatarSeed: 'meeting', timeLabel: '3小时前', category: '职场吐槽', tag: '职场吐槽', content: '一个本来 15 分钟能说完的会，硬是开了 90 分钟。出来的时候我的灵魂已经先下班了。', comments: 56, likes: 398, styleIndex: 3 },
+        { id: 'echo-09', author: '橘猫保安', avatarSeed: 'orange-cat', timeLabel: '3小时前', category: '萌宠日常', tag: '萌宠日常', content: '小区门口的橘猫今天照常巡逻，还认真检查了我的外卖袋，感觉它才是这里真正的物业。', comments: 24, likes: 201, styleIndex: 0 },
+        { id: 'echo-10', author: '月亮邮差', avatarSeed: 'luna', timeLabel: '4小时前', category: '深夜emo', tag: '深夜emo', content: '晚上戴着耳机散步，随机播放到一首老歌，突然想起很久没联系的朋友。希望大家都好。', comments: 19, likes: 118, styleIndex: 1 },
+        { id: 'echo-11', author: 'KPI 逃兵', avatarSeed: 'kpi', timeLabel: '4小时前', category: '职场吐槽', tag: '职场吐槽', content: '今天被问“这个需求很简单吧？”我微笑点头，内心已经打开了 99 个浏览器标签页。', comments: 45, likes: 267, styleIndex: 2 },
+        { id: 'echo-12', author: '仓鼠补给站', avatarSeed: 'hamster', timeLabel: '5小时前', category: '萌宠日常', tag: '萌宠日常', content: '仓鼠把瓜子全藏进小窝里，还装作什么都没发生。小小一只，心眼比我周计划还多。', comments: 13, likes: 74, styleIndex: 3 },
+        { id: 'echo-13', author: '夜跑慢半拍', avatarSeed: 'night-run', timeLabel: '5小时前', category: '深夜emo', tag: '深夜emo', content: '今晚跑步的时候风很温柔，路灯把影子拉得很长。感觉难过也可以一点点被甩在身后。', comments: 31, likes: 244, styleIndex: 0 },
+        { id: 'echo-14', author: 'PPT 修理工', avatarSeed: 'ppt', timeLabel: '6小时前', category: '职场吐槽', tag: '职场吐槽', content: '帮同事调整 PPT，对齐像素比解决人生大事还认真。做完那刻，我觉得我配拥有一杯冰美式。', comments: 29, likes: 159, styleIndex: 1 },
+        { id: 'echo-15', author: '兔兔观察员', avatarSeed: 'rabbit', timeLabel: '6小时前', category: '萌宠日常', tag: '萌宠日常', content: '朋友家的兔子今天把青菜叼走又回头看我，像在说“这片菜地我承包了”。萌到投降。', comments: 11, likes: 88, styleIndex: 2 },
+        { id: 'echo-16', author: '凌晨三点半', avatarSeed: 'three-am', timeLabel: '7小时前', category: '深夜emo', tag: '深夜emo', content: '有时候不是睡不着，是脑子还在开一个没有主持人的会。希望今晚大家都能早点关机。', comments: 38, likes: 305, styleIndex: 3 },
+        { id: 'echo-17', author: '需求捕手', avatarSeed: 'requirement', timeLabel: '8小时前', category: '职场吐槽', tag: '职场吐槽', content: '刚把需求做完，新的补充说明又来了。产品说“就一点点小改动”，我听见键盘在叹气。', comments: 52, likes: 321, styleIndex: 0 },
+        { id: 'echo-18', author: '猫爪印收藏家', avatarSeed: 'paw', timeLabel: '8小时前', category: '萌宠日常', tag: '萌宠日常', content: '猫咪在我的笔记本上踩出一串爪印，虽然打乱了工作，但它可能是在给今天盖章吧。🐾', comments: 20, likes: 166, styleIndex: 1 },
+        { id: 'echo-19', author: '晚风收件箱', avatarSeed: 'wind', timeLabel: '9小时前', category: '深夜emo', tag: '深夜emo', content: '今天其实有点累，但路过花店闻到茉莉香，忽然觉得生活还是偷偷给我留了小礼物。', comments: 17, likes: 142, styleIndex: 2 },
+        { id: 'echo-20', author: '摸鱼研究所', avatarSeed: 'office-fish', timeLabel: '9小时前', category: '职场吐槽', tag: '职场吐槽', content: '下午三点的办公室最安静，大家都在假装精神饱满。其实灵魂已经排队去买下午茶了。', comments: 36, likes: 233, styleIndex: 3 }
+    ];
+
+    let currentEchoCategory = '热门';
+
+    function escapeHtml(str) {
+        let safeStr = str !== null && str !== undefined ? str : '';
+        return String(safeStr).replace(/[&<>"]/g, function(s) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[s];
+        });
     }
 
-    function generateEchoCardHtml(echo) {
+    function normalizeSavedEcho(echo, index) {
+        const fallbackCategory = echo.category || echo.tag || '深夜emo';
+        const safeStyleIndex = echo.styleIndex !== undefined && echo.styleIndex !== null ? echo.styleIndex : index % 4;
+        return {
+            id: echo.id || `saved-${index}`,
+            author: echo.author || '匿名小怪兽',
+            avatarSeed: echo.avatarSeed || echo.id || `saved-${index}`,
+            timeLabel: echo.timeLabel || '刚刚',
+            category: fallbackCategory,
+            tag: echo.tag || fallbackCategory,
+            content: echo.content || '',
+            comments: typeof echo.comments === 'number' ? echo.comments : 0,
+            likes: typeof echo.likes === 'number' ? echo.likes : 0,
+            styleIndex: safeStyleIndex
+        };
+    }
+
+    function getEchoPosts() {
+        const savedEchos = JSON.parse(localStorage.getItem('yoka_echos')) || [];
+        return [...savedEchos.map(normalizeSavedEcho), ...defaultEchoPosts];
+    }
+
+    function loadEchos(category = currentEchoCategory) {
+        const container = document.querySelector('#screen-echo .staggered-grid');
+        if (!container) return;
+
+        currentEchoCategory = category;
+        const posts = getEchoPosts();
+        const filteredPosts = category === '热门' ? posts : posts.filter(post => post.category === category);
+
+        container.innerHTML = filteredPosts.map((echo, index) => generateEchoCardHtml(echo, index)).join('');
+        lucide.createIcons({ root: container });
+    }
+
+    function generateEchoCardHtml(echo, index = 0) {
         const echoStyles = [
-            { bg: 'bg-[#FF6B00]', text: 'text-white', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: '-rotate-2', tagBg: 'bg-white/20' },
-            { bg: 'bg-white', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: 'rotate-2', tagBg: 'bg-slate-100' },
-            { bg: 'bg-[#FFE600]', text: 'text-[#1A1A2E]', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: 'rotate-1', tagBg: 'bg-white/40' },
-            { bg: 'bg-[#34D399]', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: '-rotate-1', tagBg: 'bg-white/30' }
+            { bg: 'bg-[#FF6B00]', text: 'text-white', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: '-rotate-2', tagBg: 'bg-white/20', line: 'border-white/30', decor: 'tape-yellow' },
+            { bg: 'bg-white', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: 'rotate-2', tagBg: 'bg-slate-100', line: 'border-[#1A1A2E]/10', decor: 'pin-green' },
+            { bg: 'bg-[#FFE600]', text: 'text-[#1A1A2E]', radius: 'rounded-tl-[24px] rounded-br-[24px] rounded-tr-[8px] rounded-bl-[8px]', rotate: 'rotate-1', tagBg: 'bg-white/40', line: 'border-[#1A1A2E]/10', decor: 'tape-orange' },
+            { bg: 'bg-[#34D399]', text: 'text-[#1A1A2E]', radius: 'rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[8px] rounded-br-[8px]', rotate: '-rotate-1', tagBg: 'bg-white/30', line: 'border-[#1A1A2E]/10', decor: 'pin-yellow' }
         ];
-        const style = echoStyles[Math.floor(Math.random() * echoStyles.length)];
-        const hasTape = Math.random() > 0.5;
-        const tapeOrPin = hasTape
-            ? `<div class="absolute -top-2 left-4 w-10 h-3 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>`
-            : `<div class="absolute top-2 right-3 w-3 h-3 bg-[#FF4500] rounded-full pop-border pop-shadow-sm z-10"><div class="w-1 h-1 bg-white rounded-full mx-auto mt-0.5"></div></div>`;
+        
+        const styleIndex = echo.styleIndex !== undefined && echo.styleIndex !== null ? echo.styleIndex : index;
+        const style = echoStyles[styleIndex % echoStyles.length];
+        
+        const decorMap = {
+            'tape-yellow': `<div class="absolute -top-2 left-4 w-10 h-3 bg-[#FFE600]/90 pop-border -rotate-3 z-10"></div>`,
+            'pin-green': `<div class="absolute top-2 right-3 w-3 h-3 bg-[#34D399] rounded-full pop-border pop-shadow-sm z-10"></div>`,
+            'tape-orange': `<div class="absolute -top-1.5 right-4 w-8 h-3 bg-[#FF6B00]/80 pop-border rotate-6 z-10"></div>`,
+            'pin-yellow': `<div class="absolute top-3 left-3 w-3 h-3 bg-[#FFE600] rounded-full pop-border pop-shadow-sm z-10"></div>`
+        };
+        const safeAuthor = escapeHtml(echo.author);
+        const safeTime = escapeHtml(echo.timeLabel);
+        const safeContent = escapeHtml(echo.content);
+        const safeTag = escapeHtml(echo.tag || echo.category);
+        const safeAvatarSeed = encodeURIComponent(echo.avatarSeed || echo.id || 'echo');
+        const comments = Number.isFinite(Number(echo.comments)) ? Number(echo.comments) : 0;
+        const likes = Number.isFinite(Number(echo.likes)) ? Number(echo.likes) : 0;
+        const headerIndent = style.decor === 'pin-yellow' ? 'ml-4' : '';
 
         return `
-        <div class="staggered-item ${style.bg} p-4 ${style.radius} pop-border pop-shadow ${style.rotate} ${style.text} hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" onclick="openEchoDetail(this)">
-            ${tapeOrPin}
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=${echo.id}&backgroundColor=transparent" alt="avatar"></div>
+        <div class="staggered-item ${style.bg} p-4 ${style.radius} pop-border pop-shadow ${style.rotate} ${style.text} hover:rotate-0 hover:-translate-y-1 transition-all cursor-pointer relative mt-2" data-category="${escapeHtml(echo.category)}" onclick="openEchoDetail(this)">
+            ${decorMap[style.decor]}
+            <div class="flex items-center gap-2 mb-2 ${headerIndent}">
+                <div class="w-7 h-7 rounded-full pop-border overflow-hidden bg-white"><img src="https://api.dicebear.com/7.x/micah/svg?seed=${safeAvatarSeed}&backgroundColor=transparent" alt="avatar"></div>
                 <div>
-                    <p class="text-[10px] font-black leading-none ${style.text}">匿名小怪兽</p>
-                    <p class="text-[8px] opacity-75 mt-1">刚刚</p>
+                    <p class="text-[10px] font-black leading-none ${style.text}">${safeAuthor}</p>
+                    <p class="text-[8px] opacity-75 mt-1">${safeTime}</p>
                 </div>
             </div>
-            <p class="text-sm font-black leading-relaxed">${echo.content}</p>
-            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t border-current/20 pt-2">
-                <span class="${style.tagBg} px-1.5 py-0.5 rounded"># 最新秘密</span>
+            <p class="text-sm font-black leading-relaxed ${style.text}">${safeContent}</p>
+            <div class="mt-3 flex items-center justify-between text-xs font-bold border-t ${style.line} pt-2">
+                <span class="${style.tagBg} px-1.5 py-0.5 rounded"># ${safeTag}</span>
                 <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> 0</div>
+                    <div class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> ${comments}</div>
                     <button onclick="toggleLike(this, event)" class="flex items-center gap-1 hover:scale-110 active:scale-90 transition-transform">
-                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">0</span>
+                        <i data-lucide="heart" class="w-3.5 h-3.5 like-icon"></i> <span class="like-count">${likes}</span>
                     </button>
                 </div>
             </div>
@@ -2585,7 +2644,10 @@
         if(container) {
             container.style.transition = 'opacity 0.2s';
             container.style.opacity = '0';
-            setTimeout(() => { container.style.opacity = '1'; }, 250);
+            setTimeout(() => {
+                loadEchos(category);
+                container.style.opacity = '1';
+            }, 200);
         }
         showToast(`已为您筛选频道：${category} 📡`, 'info');
     }
@@ -2731,7 +2793,7 @@
         const content = document.getElementById('badge-content');
         content.innerHTML = `
             <div class="relative mb-6 mt-4">
-                <div class="absolute inset-0 ${data.bg} blur-xl opacity-60 rounded-full scale-150"></div>
+                <div class="absolute top-0 left-0 right-0 bottom-0 ${data.bg} blur-xl opacity-60 rounded-full scale-150"></div>
                 <div class="w-24 h-24 ${data.bg} rounded-full pop-border pop-shadow flex items-center justify-center relative z-10 animate-bounce">
                     <i data-lucide="${data.icon}" class="w-12 h-12 ${data.color}"></i>
                 </div>
